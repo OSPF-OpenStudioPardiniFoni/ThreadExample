@@ -4,7 +4,7 @@ import java.lang.Integer;
 
 public class MainThread {
 
-	public void main(String args[]){
+	public static void main(String args[]){
 		
 		Job<String> jobs[] = new Job[10];
 		for(int j=0; j<jobs.length; j++) jobs[j]=new Job<String>(new String(Integer.valueOf(j*10).toString()));
