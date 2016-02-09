@@ -10,7 +10,7 @@ public class MainThread {
 		for(int j=0; j<jobs.length; j++) jobs[j]=new Job<String>(new String(Integer.valueOf(j*10).toString()));
 		Job<String> first = new Job<String>(new String("ciao"));
 		
-		DynamicExecutorService<Job> boss = new DynamicExecutorService<Job>(first);
+		DynamicExecutorService<Job> boss = DynamicExecutorService.getNewService<Job>(first);
 		for(Job<String> j : jobs) boss.addJob(j);
 		
 		boss.start();

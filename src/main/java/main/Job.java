@@ -1,6 +1,6 @@
 package main;
 
-public class Job<J> {
+public class Job<J> implements Runnable{
 
 	private J internalObject;
 	
@@ -17,4 +17,8 @@ public class Job<J> {
 		return internalObject.toString();
 	}
 	
+	@Override
+	public void run(){
+		
+	}
 }
