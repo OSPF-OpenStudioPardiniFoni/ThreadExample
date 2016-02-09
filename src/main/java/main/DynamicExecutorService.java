@@ -62,7 +62,7 @@ public class DynamicExecutorService<T> extends Thread {
 		System.out.println("ExecutorService lancia i minions");
 		this.startAllMinions();
 		
-		//while(true){
+		while(true){
 			System.out.println("ExecutorService tenta il lock");
 			workQueueLock.lock();
 			try{
@@ -82,7 +82,7 @@ public class DynamicExecutorService<T> extends Thread {
 						stopFlags[i] = Boolean.TRUE;
 					
 					isEmpty.signalAll();	
-					//break;
+					break;
 				}
 				
 			}catch(InterruptedException e){}
@@ -90,9 +90,10 @@ public class DynamicExecutorService<T> extends Thread {
 				workQueueLock.unlock();
 			}
 			
-		//}
+		}
 		workQueueLock.unlock();
 		System.out.println("ExecutorService Finito");
+		//signal per il main
 		
 	}
 	
