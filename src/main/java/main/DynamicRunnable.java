@@ -3,19 +3,19 @@ package main;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class DynamicRunnable<X> implements Runnable{
+public class DynamicRunnable implements Runnable{
 
 	private int numMinions;
 	private WorkerThread[] minions;
 	private Boolean[] minionsStatus; // false = idle
 	private Boolean[] stopFlags;
 	
-	private SynchronizedLinkedList<X> workQueue;
+	private SynchronizedLinkedList workQueue;
 	private Lock workQueueLock;
 	private Condition isEmpty;
 	private Condition wakeUpBoss;
 	
-	public DynamicRunnable(int numMinions, WorkerThread[] minions, Boolean[] minionsStatus, Boolean[] stopFlags, SynchronizedLinkedList<X> workQueue){
+	public DynamicRunnable(int numMinions, WorkerThread[] minions, Boolean[] minionsStatus, Boolean[] stopFlags, SynchronizedLinkedList workQueue){
 		this.numMinions=numMinions;
 		this.minions=minions;
 		this.minionsStatus=minionsStatus;
@@ -26,6 +26,13 @@ public class DynamicRunnable<X> implements Runnable{
 		isEmpty = workQueue.getNoJobsCondition();
 		wakeUpBoss = workQueue.getNewJobsCondition();
 		
+		
+		// test - aggiungo qui altri job
+		Job<String> j;
+		for(int x=0; x<10; x++){
+			j = new Job<String>(new String("ciaone"+x));
+			workQueue.syncAdd(j);
+		}
 	}
 	
 	private void startAllMinions(){

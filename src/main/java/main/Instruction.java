@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 
 public class Instruction<T> implements Runnable{
 
-	private final SynchronizedLinkedList<T> workQueue;
+	private final SynchronizedLinkedList workQueue;
 	private Boolean minionStatus;
 	private Boolean stopFlags;
 	private int runId;
@@ -14,7 +14,7 @@ public class Instruction<T> implements Runnable{
 	private final Condition noJobs;
 	private final Condition wakeUpBoss;
 	
-	public Instruction(SynchronizedLinkedList<T> w, Boolean minion, Boolean s, int r){
+	public Instruction(SynchronizedLinkedList w, Boolean minion, Boolean s, int r){
 		this.workQueue=w;
 		this.minionStatus=minion;
 		this.stopFlags=s;
@@ -30,7 +30,7 @@ public class Instruction<T> implements Runnable{
 				
 				if(stopFlags==Boolean.TRUE) break; 
 				
-				T myJob = workQueue.syncGet();
+				Job myJob = workQueue.syncGet();
 				
 			//	if(myJob==null){
 					

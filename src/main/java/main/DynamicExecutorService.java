@@ -3,9 +3,18 @@ package main;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class DynamicExecutorService<T> extends Thread{
+public class DynamicExecutorService<J> extends Thread{
 
-
+	private int numMinions;
+	private WorkerThread[] minions;
+	private Boolean[] minionsStatus; // false = idle
+	private Boolean[] stopFlags;
+	
+	private SynchronizedLinkedList workQueue;
+	private Lock workQueueLock;
+	private Condition isEmpty;
+	private Condition wakeUpBoss;
+	
 	
 	/**
 	 * Returns a new DynamicExecutorService. The firstJob is 
@@ -13,50 +22,83 @@ public class DynamicExecutorService<T> extends Thread{
 	 * equal to the number of avaible cores.  
 	 * @param firstJob
 	 */
-	public static DynamicExecutorService getNewService(T firstJob){ 
+	public DynamicExecutorService(Job firstJob){ 
 		
-		SynchronizedLinkedList<T> workQueue = new SynchronizedLinkedList<T>();
+		workQueue = new SynchronizedLinkedList();
 		workQueue.syncAdd(firstJob);
 		
-		int numMinions = Runtime.getRuntime().availableProcessors();
+		workQueueLock = workQueue.getLock();
+		isEmpty = workQueue.getNoJobsCondition();
+		wakeUpBoss = workQueue.getNewJobsCondition();
+		
+		
+		// test - aggiungo qui altri job========
+		Job<String> j;
+		for(int x=0; x<10; x++){
+			j = new Job<String>(new String("ciaone"+x));
+			workQueue.syncAdd(j);
+		}
+		//=======================================
+		
+		numMinions = Runtime.getRuntime().availableProcessors();
 		System.out.println("numero processori = "+numMinions);
-		WorkerThread[] minions = new WorkerThread[numMinions];
-		Boolean[] minionsStatus = new Boolean[numMinions];
-		Boolean[] stopFlags = new Boolean[numMinions];
+		minions = new WorkerThread[numMinions];
+		minionsStatus = new Boolean[numMinions];
+		stopFlags = new Boolean[numMinions];
 		
 		
 		for(int i=0; i<numMinions; i++){
-			Instruction r=new Instruction(workQueue, minionsStatus[i], stopFlags[i], i);
-			minions[i]=new WorkerThread(i,r);
+			minions[i]=new WorkerThread(i, numMinions, minions, minionsStatus[i], stopFlags[i],workQueue);
 			minionsStatus[i] = Boolean.FALSE;
 			stopFlags[i] = Boolean.FALSE;
 		}
 		
-		
-		DynamicRunnable master= new DynamicRunnable(numMinions, minions, minionsStatus, stopFlags, workQueue);
-		DynamicExecutorService ret= new DynamicExecutorService(master);
-		return ret;
-		
 	}
 	
-	public DynamicExecutorService(Runnable master){
-		super(master);
+	private void startAllMinions(){
+		for(int i=0; i<minions.length;i++){ minions[i].start(); };
 	}
-	
-	/**
-	 * Add a new job BEFORE running the DynamicExecutorService
-	 * @param newJob the job to add
-	 */
-	public void addJob(T newJob){
-		workQueue.syncAdd(newJob);
-	}
-	
-	
 	
 	@Override
-	public void start(){
+	public void run(){
+		System.out.println("ExecutorService lancia i minions");
+		this.startAllMinions();
 		
+		while(true){
+			System.out.println("ExecutorService tenta il lock");
+			workQueueLock.lock();
+			try{
+				
+				System.out.println("ExecutorService si addormenta");
+				
+				wakeUpBoss.wait();
+				
+				System.out.println("ExecutorService si sveglia");
+				
+				boolean notAllIdle = false;
+				for(int i=0; i<minionsStatus.length; i++) 
+					notAllIdle = notAllIdle || minionsStatus[i].booleanValue();
+				if(!notAllIdle){
+					
+					for(int i=0; i<stopFlags.length; i++)
+						stopFlags[i] = Boolean.TRUE;
+					
+					isEmpty.signalAll();	
+					break;
+				}
+				
+			}catch(InterruptedException e){}
+			finally{
+				workQueueLock.unlock();
+			}
+			
+		}
+		workQueueLock.unlock();
+		System.out.println("ExecutorService Finito");
+		//signal per il main
 		
 	}
+	
+	
 	
 }

@@ -1,14 +1,14 @@
 package main;
 
-public class Job<J> implements Runnable{
+public class Job<S>{
 
-	private J internalObject;
+	private S internalObject;
 	
-	public Job(J obj){
+	public Job(S obj){
 		internalObject = obj;
 	}
 	
-	public J getInternalObject(){
+	public S getInternalObject(){
 		return internalObject;
 	}
 	
@@ -17,8 +17,5 @@ public class Job<J> implements Runnable{
 		return internalObject.toString();
 	}
 	
-	@Override
-	public void run(){
-		
-	}
+	
 }

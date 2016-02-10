@@ -6,9 +6,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-public class SynchronizedLinkedList<X>{
+public class SynchronizedLinkedList{
 
-	private LinkedList<X> list; 
+	private LinkedList<Job> list; 
 	
 	final Lock listLock = new ReentrantLock();
 	final Condition noJobs = listLock.newCondition();
@@ -16,14 +16,14 @@ public class SynchronizedLinkedList<X>{
 	
 	
 	public SynchronizedLinkedList(){
-		list = new LinkedList<X>();
+		list = new LinkedList<Job>();
 	}
 	
-	public synchronized void syncAdd(X elem){
+	public synchronized void syncAdd(Job elem){
 		list.addLast(elem);
 	}
 	
-	public synchronized X syncGet(){
+	public synchronized Job syncGet(){
 		if(!list.isEmpty()){
 			return list.removeFirst(); 
 		}else{
