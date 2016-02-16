@@ -14,7 +14,7 @@ public class Master extends Thread {
 	private SynchedContainer[] currentWorks;
 	
 	public Master(Double first){
-		int proc = 4;//Runtime.getRuntime().availableProcessors();
+		int proc = 8;//Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
 		minionsQueues=new WorkQueue[proc];
@@ -54,7 +54,6 @@ public class Master extends Thread {
 				}
 			}
 			
-			
 			if(minionsStatus.areAllIdle()&&bigWork.isEmpty()){
 				boolean test=true;
 				for(int i=0; i<minionsQueues.length;i++){
@@ -64,22 +63,31 @@ public class Master extends Thread {
 					break;
 				}
 			}
+			
 			LinkedList<Integer> IdleIDs = minionsStatus.getIdleList();
 			
-			ListIterator<Integer> iter = IdleIDs.listIterator();
-			int id;
-			while(iter.hasNext()){
-				id=iter.next().intValue();
-				bigWork.addAll(minionsQueues[id]);
-				minionsQueues[id].clearList();
-			}
-			iter = IdleIDs.listIterator();
-			while(iter.hasNext()){
-				id=iter.next().intValue();
-				if(!bigWork.isEmpty()){
-					currentWorks[id].loadWork(bigWork.pop());
+			if(IdleIDs != null){
+			
+				ListIterator<Integer> iter = IdleIDs.listIterator();
+				int id;
+				while(iter.hasNext()){
+					id=iter.next().intValue();
+					bigWork.addAll(minionsQueues[id]);
+					minionsQueues[id].clearList();
+				}
+				iter = IdleIDs.listIterator();
+				while(iter.hasNext()){
+					id=iter.next().intValue();
+					if(!bigWork.isEmpty()){
+						
+						minionsStatus.setRunning(id);
+						currentWorks[id].loadWork(bigWork.pop());
+						
+					}
 				}
 			}
+			
+			
 			
 		}
 		

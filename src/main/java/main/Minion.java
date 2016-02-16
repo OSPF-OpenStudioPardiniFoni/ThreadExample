@@ -28,7 +28,7 @@ public class Minion extends Thread {
 			}catch(InterruptedException e){
 				break;
 			}
-			status.setRunning(id);
+			//status.setRunning(id);
 			
 			//Fase consumo
 			System.out.println("Thread "+id+" consumo "+job.toString());
@@ -53,9 +53,9 @@ public class Minion extends Thread {
 			status.setIdle(id);
 		}
 		if(works.isEmpty()){
-			System.out.println("Minion "+id+" termina con coda vuota");
+			//System.out.println("Minion "+id+" termina con coda vuota");
 		}else{
-			System.out.println("Minion "+id+" termina con NON coda vuota");
+			System.out.println("Minion "+id+" MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe");
 		}
 	}
 }

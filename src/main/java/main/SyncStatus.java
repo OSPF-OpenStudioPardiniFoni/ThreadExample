@@ -34,11 +34,19 @@ class SyncStatus{
 
 	public synchronized LinkedList<Integer> getIdleList(){
 		LinkedList<Integer> ret = new LinkedList<Integer>();
+		boolean empty = true;
 		for(int i=0; i<statusArray.length; i++){
-			if(statusArray[i]==Boolean.FALSE)
+			if(statusArray[i]==Boolean.FALSE){
 				ret.addLast(Integer.valueOf(i));
+				empty=false;
+			}
+				
 		}
-		return ret;
+		if(empty){
+			return null;
+		}else{
+			return ret;
+		}
 	}
 
 }
