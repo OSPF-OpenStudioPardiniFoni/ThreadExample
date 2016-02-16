@@ -38,11 +38,24 @@ public class Minion extends Thread {
 				System.out.println("Thread "+id+" creo "+d1+" e "+d2);
 				works.push(Double.valueOf(d1));
 				//works.push(Double.valueOf(Math.random()));
+				
+				if(Math.random()>0.8){
+					int j;
+					for(int i=0; i<(int)(Math.random()*100000); i++){
+						j=i;
+					}
+				}
+				
 				works.push(Double.valueOf(d2));
 			}
 		
 			// 2.notify to master()
 			status.setIdle(id);
+		}
+		if(works.isEmpty()){
+			System.out.println("Minion "+id+" termina con coda vuota");
+		}else{
+			System.out.println("Minion "+id+" termina con NON coda vuota");
 		}
 	}
 }

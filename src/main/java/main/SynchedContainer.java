@@ -17,6 +17,5 @@ public class SynchedContainer {
 		innerData=d;
 		notify();
 	}
-	
 	 
 }

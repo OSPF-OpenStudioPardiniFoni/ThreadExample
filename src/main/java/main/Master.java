@@ -14,7 +14,7 @@ public class Master extends Thread {
 	private SynchedContainer[] currentWorks;
 	
 	public Master(Double first){
-		int proc = Runtime.getRuntime().availableProcessors();
+		int proc = 4;//Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
 		minionsQueues=new WorkQueue[proc];
@@ -45,6 +45,15 @@ public class Master extends Thread {
 		while(true){
 			// Aspetto che almeno un mionion torni Idle
 			minionsStatus.waitForIdles();
+			
+			//random sleep
+			if(Math.random()>0.7){
+				int j;
+				for(int i=0; i<100000; i++){
+					j=i;
+				}
+			}
+			
 			
 			if(minionsStatus.areAllIdle()&&bigWork.isEmpty()){
 				boolean test=true;
@@ -79,6 +88,10 @@ public class Master extends Thread {
 		
 		for(int i=0;i<minions.length;i++){
 			minions[i].interrupt();
+		}
+		
+		if(bigWork.isEmpty()){
+			System.out.println("OK coda vuota");
 		}
 		System.out.println("MASTER FINISHED");
 	}
