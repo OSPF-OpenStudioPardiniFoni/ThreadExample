@@ -9,27 +9,34 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Master extends Thread {
 	private Thread[] minions;
 	private SyncStatus minionsStatus;
-	private WorkQueue[] minionsQueues;
-	private WorkQueue bigWork;
+	private WorkQueue[] minionsUploadBigWorksQueues;
+	private WorkQueue[] minionsUploadSmallWorksQueues;
+	private WorkQueue bigWorkQueue;
+	private WorkQueue smallWorkQueue;
 	private SynchedContainer[] currentWorks;
 	
 	public Master(Double first){
-		int proc = 1;//Runtime.getRuntime().availableProcessors();
+		int proc = 4;//Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
-		minionsQueues=new WorkQueue[proc];
-		bigWork=new WorkQueue(first);
+		
+		minionsUploadBigWorksQueues=new WorkQueue[proc];
+		minionsUploadSmallWorksQueues= new WorkQueue[proc];
+		
+		bigWorkQueue=new WorkQueue(first);
+		smallWorkQueue = new WorkQueue();
 		
 		//test
-		bigWork.push(Math.random());
-		bigWork.push(Math.random());
+		bigWorkQueue.push(Math.random());
+		bigWorkQueue.push(Math.random());
 		//
 		currentWorks=new SynchedContainer[proc];
 		
 		for(int i=0;i<proc;i++){
-			minionsQueues[i]= new WorkQueue();
+			minionsUploadBigWorksQueues[i]= new WorkQueue();
+			minionsUploadSmallWorksQueues[i]= new WorkQueue();
 			currentWorks[i]=new SynchedContainer();
-			minions[i]=new Minion(i, minionsStatus,minionsQueues[i], currentWorks[i]);
+			minions[i]=new Minion(i, minionsStatus,minionsUploadBigWorksQueues[i], minionsUploadSmallWorksQueues[i],currentWorks[i]);
 		}
 		
 	}
@@ -46,7 +53,7 @@ public class Master extends Thread {
 	public void run(){
 		System.out.println("Master: Lancio i minions!");
 		startMinions();
-		currentWorks[0].loadWork(bigWork.pop());
+		currentWorks[0].loadWork(bigWorkQueue.pop());
 		
 		//timeLog
 		long t1;
@@ -64,10 +71,10 @@ public class Master extends Thread {
 			wakesUp=wakesUp+1;
 			
 			//wakeUp
-			if(minionsStatus.areAllIdle()&&bigWork.isEmpty()){
+			if(minionsStatus.areAllIdle()&&bigWorkQueue.isEmpty()){
 				boolean test=true;
-				for(int i=0; i<minionsQueues.length;i++){
-					test=test&&minionsQueues[i].isEmpty();
+				for(int i=0; i<minionsUploadBigWorksQueues.length;i++){
+					test=test&&minionsUploadBigWorksQueues[i].isEmpty();
 				}
 				if(test==true){
 					break;
@@ -82,16 +89,16 @@ public class Master extends Thread {
 				int id;
 				while(iter.hasNext()){
 					id=iter.next().intValue();
-					bigWork.addAll(minionsQueues[id]);
-					minionsQueues[id].clearList();
+					bigWorkQueue.addAll(minionsUploadBigWorksQueues[id]);
+					minionsUploadBigWorksQueues[id].clearList();
 				}
 				iter = IdleIDs.listIterator();
 				while(iter.hasNext()){
 					id=iter.next().intValue();
-					if(!bigWork.isEmpty()){
+					if(!bigWorkQueue.isEmpty()){
 						
 						minionsStatus.setRunning(id);
-						currentWorks[id].loadWork(bigWork.pop());
+						currentWorks[id].loadWork(bigWorkQueue.pop());
 						
 					}
 				}
@@ -112,7 +119,7 @@ public class Master extends Thread {
 		
 		System.out.println("Master: wakedUp = "+wakesUp+" avg WakedUp = "+(sum/wakesUp));
 		
-		if(bigWork.isEmpty()){
+		if(bigWorkQueue.isEmpty()){
 			System.out.println("OK coda vuota");
 		}
 		System.out.println("MASTER FINISHED");

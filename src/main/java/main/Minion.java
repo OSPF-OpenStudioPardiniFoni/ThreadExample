@@ -6,14 +6,16 @@ import java.util.concurrent.locks.Lock;
 public class Minion extends Thread {
 	private int id;
 	private SyncStatus status;
-	private WorkQueue works;
+	private WorkQueue uploadBigWorksQueue;
+	private WorkQueue uploadSmallWorksQueue;
 	private SynchedContainer myWork;
 	
 	
-	public Minion(int id, SyncStatus status, WorkQueue w, SynchedContainer work){
+	public Minion(int id, SyncStatus status, WorkQueue w, WorkQueue small,SynchedContainer work){
 		this.id=id;
 		this.status=status;
-		this.works=w;
+		this.uploadBigWorksQueue=w;
+		this.uploadSmallWorksQueue=small;
 		this.myWork=work;
 		
 	}
@@ -46,8 +48,8 @@ public class Minion extends Thread {
 				double d1 = Math.random();
 				double d2 = Math.random();
 				System.out.println("Thread "+id+" creo "+d1+" e "+d2);
-				works.push(Double.valueOf(d1));
-				works.push(Double.valueOf(d2));
+				uploadBigWorksQueue.push(Double.valueOf(d1));
+				uploadBigWorksQueue.push(Double.valueOf(d2));
 			}
 		
 			//timeLog (2)
@@ -64,7 +66,7 @@ public class Minion extends Thread {
 			System.out.println("Thread "+id+" jobs consumed = "+jobsConsumed+" avg = "+avg) ;
 		}
 		
-		if(works.isEmpty()){
+		if(uploadBigWorksQueue.isEmpty()){
 			//System.out.println("Minion "+id+" termina con coda vuota");
 		}else{
 			System.out.println("Minion "+id+" MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe");
