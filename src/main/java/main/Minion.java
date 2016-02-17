@@ -20,8 +20,14 @@ public class Minion extends Thread {
 	
 	@Override
 	public void run(){
+		Double job;
+		long t1;
+		long t2;
+		double sum=0;
+		double jobsConsumed=0;
+		
 		while(true){
-			Double job;
+			
 			//Tenta di estrarre lavoro 1. wait()
 			try{
 				job = myWork.extractWork();
@@ -30,6 +36,10 @@ public class Minion extends Thread {
 			}
 			//status.setRunning(id);
 			
+			//timeLog (1)
+			t1 = System.currentTimeMillis();
+			jobsConsumed=jobsConsumed+1;
+			
 			//Fase consumo
 			System.out.println("Thread "+id+" consumo "+job.toString());
 			if(job.doubleValue()<0.5){
@@ -37,21 +47,23 @@ public class Minion extends Thread {
 				double d2 = Math.random();
 				System.out.println("Thread "+id+" creo "+d1+" e "+d2);
 				works.push(Double.valueOf(d1));
-				//works.push(Double.valueOf(Math.random()));
-				
-				if(Math.random()>0.8){
-					int j;
-					for(int i=0; i<(int)(Math.random()*100000); i++){
-						j=i;
-					}
-				}
-				
 				works.push(Double.valueOf(d2));
 			}
 		
+			//timeLog (2)
+			t2 = System.currentTimeMillis();
+			sum+=(t2-t1);
+			
 			// 2.notify to master()
 			status.setIdle(id);
 		}
+		
+		// media tempi:
+		if(jobsConsumed!=0){
+			double avg = sum/jobsConsumed;
+			System.out.println("Thread "+id+" jobs consumed = "+jobsConsumed+" avg = "+avg) ;
+		}
+		
 		if(works.isEmpty()){
 			//System.out.println("Minion "+id+" termina con coda vuota");
 		}else{

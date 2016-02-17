@@ -14,11 +14,16 @@ public class Master extends Thread {
 	private SynchedContainer[] currentWorks;
 	
 	public Master(Double first){
-		int proc = 15;//Runtime.getRuntime().availableProcessors();
+		int proc = 1;//Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
 		minionsQueues=new WorkQueue[proc];
 		bigWork=new WorkQueue(first);
+		
+		//test
+		bigWork.push(Math.random());
+		bigWork.push(Math.random());
+		//
 		currentWorks=new SynchedContainer[proc];
 		
 		for(int i=0;i<proc;i++){
@@ -42,18 +47,23 @@ public class Master extends Thread {
 		System.out.println("Master: Lancio i minions!");
 		startMinions();
 		currentWorks[0].loadWork(bigWork.pop());
+		
+		//timeLog
+		long t1;
+		long t2;
+		double sum =0;
+		double wakesUp = 0;
+		
+		
 		while(true){
 			// Aspetto che almeno un mionion torni Idle
 			minionsStatus.waitForIdles();
 			
-			//random sleep
-			if(Math.random()>0.7){
-				int j;
-				for(int i=0; i<100000; i++){
-					j=i;
-				}
-			}
+			//TimeLog
+			t1= System.currentTimeMillis();
+			wakesUp=wakesUp+1;
 			
+			//wakeUp
 			if(minionsStatus.areAllIdle()&&bigWork.isEmpty()){
 				boolean test=true;
 				for(int i=0; i<minionsQueues.length;i++){
@@ -87,16 +97,20 @@ public class Master extends Thread {
 				}
 			}
 			
-			
+			//TimeLog
+			t2 = System.currentTimeMillis();
+			sum+=(t2-t1);
 			
 		}
 		
-		// Abbiamo la condizione di terminazione
+		// Abbiamo la condizione di terminazio
 		// diamo l'interrupt a tutti i minions.
 		
 		for(int i=0;i<minions.length;i++){
 			minions[i].interrupt();
 		}
+		
+		System.out.println("Master: wakedUp = "+wakesUp+" avg WakedUp = "+(sum/wakesUp));
 		
 		if(bigWork.isEmpty()){
 			System.out.println("OK coda vuota");
