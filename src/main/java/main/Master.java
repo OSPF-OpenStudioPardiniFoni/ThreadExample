@@ -32,8 +32,8 @@ public class Master extends Thread {
 		smallWorkQueue = new WorkQueue();
 		
 		//test
-		//bigWorkQueue.push(Math.random());
-		//bigWorkQueue.push(Math.random());
+		bigWorkQueue.push(new Job(Double.valueOf(2),true));
+		bigWorkQueue.push(new Job(Double.valueOf(3),true));
 		//
 		currentWorks=new SynchedContainer[proc];
 		
@@ -132,10 +132,10 @@ public class Master extends Thread {
 				*/
 				
 				//assegnazione small work (uno solo alla volta)
-				int dummyIndex=0;
+				int dummyIndex=idleArray.length - 1;
 				if(!smallWorkQueue.isEmpty()&&sharedVariableOwner.getID()==-1){
 					id=idleArray[dummyIndex];
-					dummyIndex++;
+					dummyIndex--;
 					//assegno l'ownwer
 					sharedVariableOwner.setID(id);
 					//lo setto running
@@ -163,7 +163,7 @@ public class Master extends Thread {
 				
 				*/
 				
-				for(index=dummyIndex; index<idleArray.length; index++){
+				for(index=0; index<dummyIndex; index++){
 					id=idleArray[index];
 					if(!bigWorkQueue.isEmpty()){
 						

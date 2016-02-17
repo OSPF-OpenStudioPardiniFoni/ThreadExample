@@ -10,6 +10,7 @@ public class Minion extends Thread {
 	private WorkQueue uploadBigWorksQueue;
 	private WorkQueue uploadSmallWorksQueue;
 	private SynchedContainer myWork;
+	private Job job;
 	
 	
 	private SharedVariable sharedVariableOwner;
@@ -38,9 +39,23 @@ public class Minion extends Thread {
 		
 	}
 	
+	private void bigWorkGenerator(){
+		System.out.println("Thread "+id+" consumo bigWork "+job.toString());
+		if(Math.random()<0.8){
+			// genero un nuovo bigwork
+			int x = (int)(Math.random()*10);
+			double y =(double)x;
+			x=(int)(Math.random()*10);
+			double z =(double)x;
+			System.out.println("Thread "+id+" creo smallWork "+y+" e "+z);
+			this.uploadSmallWorksQueue.push(new Job(Double.valueOf(y),false));
+			this.uploadSmallWorksQueue.push(new Job(Double.valueOf(z),false));
+		}
+	}
+	
 	@Override
 	public void run(){
-		Job job;
+		//Job job;
 		
 		//TimeLog
 		long t1;
@@ -79,15 +94,11 @@ public class Minion extends Thread {
 			if(job.getType()){
 			
 				// nuovo consumo - BIGWORK (true)
-				System.out.println("Thread "+id+" consumo bigWork "+job.toString());
-				if(Math.random()<0.8){
-					// genero un nuovo bigwork
-					int x = (int)(Math.random()*10);
-					double y =(double)x;
-					System.out.println("Thread "+id+" creo smallWork "+y);
-					this.uploadSmallWorksQueue.push(new Job(Double.valueOf(y),false));
+				bigWorkGenerator();
+				
+				
 					
-				}
+				
 				//
 			}else{
 				
@@ -99,7 +110,7 @@ public class Minion extends Thread {
 					this.uploadBigWorksQueue.push(new Job(job.getInnerData(),true));
 				}
 				// libero l'owner
-				System.out.println("Minion "+id+" libera Owner");
+				System.out.println("Minion "+id+" libera Owner "+job.getInnerData().doubleValue());
 				sharedVariableOwner.setID(-1);
 				System.out.println(sharedVariableOwner.getID());
 			}
