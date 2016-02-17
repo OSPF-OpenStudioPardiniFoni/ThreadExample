@@ -14,7 +14,7 @@ public class Master extends Thread {
 	private SynchedContainer[] currentWorks;
 	
 	public Master(Double first){
-		int proc = 8;//Runtime.getRuntime().availableProcessors();
+		int proc = 15;//Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
 		minionsQueues=new WorkQueue[proc];
