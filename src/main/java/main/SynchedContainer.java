@@ -2,19 +2,19 @@ package main;
 
 
 public class SynchedContainer {
-	private Double innerData=null;
+	private Job innerJob=null;
 	
-	public synchronized Double extractWork() throws InterruptedException{
-		while(innerData==null){
+	public synchronized Job extractWork() throws InterruptedException{
+		while(innerJob==null){
 			wait();
 		}
-		Double tmp = innerData;
-		innerData=null;
+		Job tmp = innerJob;
+		innerJob = null;
 		return tmp;
 	}
 	
-	public synchronized void loadWork(Double d){
-		innerData=d;
+	public synchronized void loadWork(Job j){
+		innerJob=j;
 		notify();
 	}
 	 

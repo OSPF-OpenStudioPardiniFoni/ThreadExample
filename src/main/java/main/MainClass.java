@@ -2,8 +2,11 @@ package main;
 
 public class MainClass {
 	public static void main(String[] args)throws InterruptedException{
-		Double first=Double.valueOf(0.3);
-		Master m = new Master(first);
+		Double first=Double.valueOf(2);
+		
+		Job j = new Job(first, true); //big
+		
+		Master m = new Master(j);
 		
 		long t1 = System.currentTimeMillis();
 		

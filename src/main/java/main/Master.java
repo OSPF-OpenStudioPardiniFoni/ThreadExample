@@ -15,8 +15,13 @@ public class Master extends Thread {
 	private WorkQueue smallWorkQueue;
 	private SynchedContainer[] currentWorks;
 	
-	public Master(Double first){
-		int proc = 4;//Runtime.getRuntime().availableProcessors();
+	//BUG 2: degli oggetti Integer non puo' essere passato il riferimento in Java 
+	private SharedVariable sharedVariableOwner;
+	
+	private LinkedList<Double> sharedVariable;
+	
+	public Master(Job first){
+		int proc = Runtime.getRuntime().availableProcessors();
 		minions = new Thread[proc];
 		minionsStatus=new SyncStatus(proc);
 		
@@ -27,16 +32,21 @@ public class Master extends Thread {
 		smallWorkQueue = new WorkQueue();
 		
 		//test
-		bigWorkQueue.push(Math.random());
-		bigWorkQueue.push(Math.random());
+		//bigWorkQueue.push(Math.random());
+		//bigWorkQueue.push(Math.random());
 		//
 		currentWorks=new SynchedContainer[proc];
+		
+		// nessuno possiede la shared variable
+		sharedVariableOwner= new SharedVariable(); // gia' a -1
+		
+		sharedVariable = new LinkedList<Double>();
 		
 		for(int i=0;i<proc;i++){
 			minionsUploadBigWorksQueues[i]= new WorkQueue();
 			minionsUploadSmallWorksQueues[i]= new WorkQueue();
 			currentWorks[i]=new SynchedContainer();
-			minions[i]=new Minion(i, minionsStatus,minionsUploadBigWorksQueues[i], minionsUploadSmallWorksQueues[i],currentWorks[i]);
+			minions[i]=new Minion(i, minionsStatus,minionsUploadBigWorksQueues[i], minionsUploadSmallWorksQueues[i],currentWorks[i], sharedVariableOwner, sharedVariable);
 		}
 		
 	}
@@ -71,28 +81,101 @@ public class Master extends Thread {
 			wakesUp=wakesUp+1;
 			
 			//wakeUp
-			if(minionsStatus.areAllIdle()&&bigWorkQueue.isEmpty()){
+			if(minionsStatus.areAllIdle()&&bigWorkQueue.isEmpty()&&smallWorkQueue.isEmpty()&&sharedVariableOwner.getID()==-1){
 				boolean test=true;
 				for(int i=0; i<minionsUploadBigWorksQueues.length;i++){
 					test=test&&minionsUploadBigWorksQueues[i].isEmpty();
+					// BUG 1
+					test=test&&minionsUploadSmallWorksQueues[i].isEmpty();
 				}
 				if(test==true){
 					break;
 				}
 			}
 			
-			LinkedList<Integer> IdleIDs = minionsStatus.getIdleList();
+			LinkedList<Integer> idleIDs = minionsStatus.getIdleList();
 			
-			if(IdleIDs != null){
+			if(idleIDs != null){
 			
-				ListIterator<Integer> iter = IdleIDs.listIterator();
+				Integer idleArray[] = new Integer[idleIDs.size()];
+				idleArray = idleIDs.toArray(idleArray);
+				int index = 0;
+				
+				int id;
+				for(index=0; index<idleArray.length; index++){
+					id=idleArray[index];
+					bigWorkQueue.addAll(minionsUploadBigWorksQueues[id]);
+					minionsUploadBigWorksQueues[id].clearList();
+					
+					//uppare le code small e svuotarle
+					smallWorkQueue.addAll(minionsUploadSmallWorksQueues[id]);
+					minionsUploadSmallWorksQueues[id].clearList();
+					
+				}
+				
+				/*ListIterator<Integer> iter = idleIDs.listIterator();
 				int id;
 				while(iter.hasNext()){
 					id=iter.next().intValue();
 					bigWorkQueue.addAll(minionsUploadBigWorksQueues[id]);
 					minionsUploadBigWorksQueues[id].clearList();
+					
+					//uppare le code small e svuotarle
+					smallWorkQueue.addAll(minionsUploadSmallWorksQueues[id]);
+					minionsUploadSmallWorksQueues[id].clearList();
+					
 				}
-				iter = IdleIDs.listIterator();
+				iter = idleIDs.listIterator();
+				
+				
+				System.out.println("Master: smallQueue vuota?"+smallWorkQueue.isEmpty()+" Valore owner "+sharedVariableOwner.getID());
+				*/
+				
+				//assegnazione small work (uno solo alla volta)
+				int dummyIndex=0;
+				if(!smallWorkQueue.isEmpty()&&sharedVariableOwner.getID()==-1){
+					id=idleArray[dummyIndex];
+					dummyIndex++;
+					//assegno l'ownwer
+					sharedVariableOwner.setID(id);
+					//lo setto running
+					minionsStatus.setRunning(id);
+					//carico il job e lancio
+					System.out.println("Master assegna owner a "+id);
+					currentWorks[id].loadWork(smallWorkQueue.pop());
+				}
+				
+				// FIXME
+				
+				/*assegnazione small work (uno solo alla volta)
+				if(!smallWorkQueue.isEmpty()&&sharedVariableOwner.getID()==-1){
+					System.out.println("Master: small Work assegnato");
+					
+					id=iter.next().intValue();
+					//assegno l'ownwer
+					sharedVariableOwner.setID(id);
+					//lo setto running
+					minionsStatus.setRunning(id);
+					//carico il job e lancio
+					System.out.println("Master assegna owner a "+id);
+					currentWorks[id].loadWork(smallWorkQueue.pop());
+				}
+				
+				*/
+				
+				for(index=dummyIndex; index<idleArray.length; index++){
+					id=idleArray[index];
+					if(!bigWorkQueue.isEmpty()){
+						
+						minionsStatus.setRunning(id);
+						currentWorks[id].loadWork(bigWorkQueue.pop());
+						
+					}
+				}
+				
+				/*
+				
+				
 				while(iter.hasNext()){
 					id=iter.next().intValue();
 					if(!bigWorkQueue.isEmpty()){
@@ -101,8 +184,16 @@ public class Master extends Thread {
 						currentWorks[id].loadWork(bigWorkQueue.pop());
 						
 					}
-				}
+				}*/
+				
+				
+				
+				
+				
+				
 			}
+			
+			
 			
 			//TimeLog
 			t2 = System.currentTimeMillis();
@@ -117,11 +208,21 @@ public class Master extends Thread {
 			minions[i].interrupt();
 		}
 		
-		System.out.println("Master: wakedUp = "+wakesUp+" avg WakedUp = "+(sum/wakesUp));
+		//System.out.println("Master: wakedUp = "+wakesUp+" avg WakedUp = "+(sum/wakesUp));
 		
-		if(bigWorkQueue.isEmpty()){
+		/*if(bigWorkQueue.isEmpty()){
 			System.out.println("OK coda vuota");
+		}*/
+		
+		//stampo la sharedVariable
+		ListIterator<Double> iter = sharedVariable.listIterator();
+		while(iter.hasNext()){
+			System.out.print("Shared:");
+			System.out.println(iter.next().doubleValue());
+			
 		}
+		
+		
 		System.out.println("MASTER FINISHED");
 	}
 	

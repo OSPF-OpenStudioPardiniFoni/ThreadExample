@@ -3,10 +3,10 @@ package main;
 import java.util.LinkedList;
 
 public class WorkQueue {
-	private LinkedList<Double> bigWork;
+	private LinkedList<Job> bigWork;
 	
 	public WorkQueue(){
-		bigWork=new LinkedList<Double>();
+		bigWork=new LinkedList<Job>();
 	}
 	
 	public void clearList(){
@@ -17,20 +17,20 @@ public class WorkQueue {
 		return bigWork.isEmpty();
 	}
 	
-	public WorkQueue(Double first){
-		bigWork=new LinkedList<Double>();
+	public WorkQueue(Job first){
+		bigWork=new LinkedList<Job>();
 		bigWork.addLast(first);
 	}
 	
-	public void push(Double d){
+	public void push(Job d){
 		bigWork.addLast(d);
 	}
 	
-	public LinkedList<Double> getInnerList(){
+	public LinkedList<Job> getInnerList(){
 		return bigWork;
 	}
 	
-	public Double pop(){
+	public Job pop(){
 		if(bigWork.isEmpty()){
 				return null;
 		}
