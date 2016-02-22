@@ -4,6 +4,11 @@ import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import it.unifi.oris.sirio.math.OmegaBigDecimal;
+import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
+import it.unifi.oris.sirio.models.stpn.factory.RegenerativeComponentsFactory;
+import it.unifi.oris.sirio.petrinet.PetriNet;
+
 public class Minion extends Thread {
 	private int id;
 	private SyncStatus status;
@@ -16,7 +21,23 @@ public class Minion extends Thread {
 	private SharedVariable sharedVariableOwner;
 	private LinkedList<Double> sharedVariable;
 	
-	public Minion(int id, SyncStatus status, WorkQueue w, WorkQueue small,SynchedContainer work, SharedVariable sharedVariableOwner, LinkedList<Double> sharedVariable){
+	//per parallelizzare il lavoro 0
+	private RegenerativeComponentsFactory f;
+	private PetriNet petriNet;
+	//
+	
+	public Minion(
+			int id,
+			SyncStatus status, 
+			WorkQueue w, 
+			WorkQueue small,
+			SynchedContainer work, 
+			SharedVariable sharedVariableOwner, 
+			LinkedList<Double> sharedVariable,
+			/* variabili nuove, non toccare*/
+			RegenerativeComponentsFactory f,
+			PetriNet petriNet
+			){
 		this.id=id;
 		this.status=status;
 		this.uploadBigWorksQueue=w;
@@ -55,6 +76,103 @@ public class Minion extends Thread {
 	
 	@Override
 	public void run(){
+		Job job;
+		while(true){
+			
+			// fase 0 estrarre il job
+			try{
+				job = myWork.extractWork();
+			}catch(InterruptedException e){
+				break;
+			}
+			
+			//fase 1 individuare il tipo di Job
+			switch(1/*job.getType()*/){
+				case 0:
+					doInitialRegenerationsJob(job);
+					break;
+				case 1: 
+					doAbsorbingMarkingJob(job);
+					break;
+				case 2:
+					doReachedRegenerationJob(job);
+					break;
+				case 3:
+					doRegenerationClassesJob(job);
+					break;
+				case 4:
+					doEvaluateSojourTimeJob(job);
+					break;
+				case 5:
+					doLocalClassesAndSojourMapJob(job);
+					break;
+			}
+			
+			
+			
+		}
+	
+	}
+	
+	//tipo 0
+	private void doInitialRegenerationsJob(Job job){
+		
+		DeterministicEnablingState current = job.getRegeneration();
+		
+		InitialRegenerationJob myJob = (InitialRegenerationJob)job;
+		
+		RegenerativeComponentsFactory f = new RegenerativeComponentsFactory(
+				false,
+				null,
+				null,
+				true,
+				myJob.getPostProcessor(),
+				myJob.getEnumerationPolicy(),
+				OmegaBigDecimal.POSITIVE_INFINITY,
+				myJob.getMarkingCondition(),
+				null,
+				0,
+				null);
+		
+		
+		
+	}
+	
+	//tipo 1
+	private void doAbsorbingMarkingJob(Job job){
+		job.executeJob();
+	}
+	
+	//tipo 2
+	private void doReachedRegenerationJob(Job job){
+		Job ret = job.executeJob();
+		if(ret == null){
+			// nulla
+		}else{
+			// metti nella pila di upload 0 ret
+		}
+		
+	}
+	
+	//tipo 3
+	private void doRegenerationClassesJob(Job job){
+		job.executeJob();
+	}
+	
+	//tipo 4
+	private void doEvaluateSojourTimeJob(Job job){
+		Job ret = job.executeJob();
+		// aggiungi ret alla upload 5
+	}
+	
+	//tipo 5
+	private void doLocalClassesAndSojourMapJob(Job job){
+		job.executeJob();
+	}
+	
+	//-----------------------------------------------------
+	/*@Override
+	public void run(){
 		//Job job;
 		
 		//TimeLog
@@ -80,14 +198,7 @@ public class Minion extends Thread {
 			
 			//Fase consumo
 			//System.out.println("Thread "+id+" consumo "+job.toString());
-			// vecchio consumo
-			/*if(job.doubleValue()<0.5){
-				double d1 = Math.random();
-				double d2 = Math.random();
-				System.out.println("Thread "+id+" creo "+d1+" e "+d2);
-				uploadBigWorksQueue.push(Double.valueOf(d1));
-				uploadBigWorksQueue.push(Double.valueOf(d2));
-			}*/
+			
 			
 			
 			
@@ -134,5 +245,5 @@ public class Minion extends Thread {
 		}else{
 			System.out.println("Minion "+id+" MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe");
 		}
-	}
+	}*/
 }

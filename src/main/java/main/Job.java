@@ -1,28 +1,20 @@
 package main;
 
-public class Job {
+import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 
-	private Double innerData;
-	private boolean type;
-	// true = BIG
-	// false = SMALL
+public abstract class Job {
+
+	protected int type;
+	private DeterministicEnablingState current;
 	
-	protected boolean getType(){
+	protected DeterministicEnablingState getRegeneration(){
+		return current;
+	}
+	
+	protected int getType(){
 		return type;
 	}
 	
-	protected Double getInnerData(){
-		return innerData;
-	}
-	
-	public Job(Double val, boolean type){
-		this.innerData=val;
-		this.type=type;
-	}
-	
-	@Override
-	public String toString(){
-		return new String(this.getInnerData().toString());
-	}
+	protected abstract Job executeJob();
 	
 }

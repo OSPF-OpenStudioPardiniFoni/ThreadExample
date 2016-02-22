@@ -46,7 +46,18 @@ public class Master extends Thread {
 			minionsUploadBigWorksQueues[i]= new WorkQueue();
 			minionsUploadSmallWorksQueues[i]= new WorkQueue();
 			currentWorks[i]=new SynchedContainer();
-			minions[i]=new Minion(i, minionsStatus,minionsUploadBigWorksQueues[i], minionsUploadSmallWorksQueues[i],currentWorks[i], sharedVariableOwner, sharedVariable);
+			minions[i]=
+					new Minion(
+							i, 
+							minionsStatus,
+							minionsUploadBigWorksQueues[i], 
+							minionsUploadSmallWorksQueues[i],
+							currentWorks[i], 
+							sharedVariableOwner, 
+							sharedVariable
+							/* nuove non toccare*/
+							//new RegenerativeComponentsFactory f ,
+							//copyOf PetriNet );
 		}
 		
 	}
