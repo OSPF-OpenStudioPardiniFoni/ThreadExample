@@ -20,14 +20,15 @@ public class InitialRegenerationJob extends Job{
 	protected InitialRegenerationJob(
 			DeterministicEnablingState current,
 			RegenerativeComponentsFactoryAndPetriNetMaker fMaker,
-			PetriNet petriNet){
+			){
 		
 		this.type = 0; // Job di tipo 0 
 		this.current=current;
 		
 		this.fMaker = fMaker;
-		this.f = fMaker.getCopy();
-		this.petriNet = petriNet;// FIXME copy
+		
+		this.f = fMaker.getFactoryCopy();
+		this.petriNet = fMaker.getPetriNetCopy();
 	}
 	
 	protected Job executeJob(){

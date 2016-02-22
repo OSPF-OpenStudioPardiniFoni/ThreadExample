@@ -50,6 +50,6 @@ public class RegenerativeComponentsFactoryAndPetriNetMaker {
 	}
 	
 	protected PetriNet getPetriNetCopy(){
-		
+		// return copy of petriNet
 	}
 }
