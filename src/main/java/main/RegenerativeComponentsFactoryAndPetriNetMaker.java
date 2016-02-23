@@ -33,6 +33,7 @@ public class RegenerativeComponentsFactoryAndPetriNetMaker {
 		
 	}
 	
+	// restituisce una copia del RegenerativeComponentsFactory
 	protected RegenerativeComponentsFactory getFactoryCopy(){
 			return new RegenerativeComponentsFactory(
 					false,
@@ -49,7 +50,12 @@ public class RegenerativeComponentsFactoryAndPetriNetMaker {
 
 	}
 	
+	// restituisce una copia della PN
 	protected PetriNet getPetriNetCopy(){
-		// return copy of petriNet
+		return PetriNet.getCopyOf(this.petriNet);
+	}
+	
+	protected MarkingCondition getAbsorbingCondition(){
+		return this.absorbingCondition;
 	}
 }

@@ -33,7 +33,6 @@ public class SojourTimeJob extends Job{
 			SuccessionGraph graph,
 			Node n,
 			StochasticStateFeature stochasticFeature,
-			BigDecimal sojourTime,
 			Map<DeterministicEnablingState, Map<Marking, BigDecimal>> sojourMap,
 			State s,
 			Marking m,

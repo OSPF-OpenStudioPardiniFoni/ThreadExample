@@ -1,13 +1,29 @@
 package main;
 
+import java.math.BigDecimal;
+import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import it.unifi.oris.oris.sirio.models.stpn.SteadyStateInitialStateBuilder;
+import it.unifi.oris.sirio.analyzer.Analyzer;
+import it.unifi.oris.sirio.analyzer.graph.Node;
+import it.unifi.oris.sirio.analyzer.graph.SuccessionGraph;
 import it.unifi.oris.sirio.math.OmegaBigDecimal;
+import it.unifi.oris.sirio.models.pn.PetriStateFeature;
 import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
+import it.unifi.oris.sirio.models.stpn.Regeneration;
+import it.unifi.oris.sirio.models.stpn.StochasticStateFeature;
 import it.unifi.oris.sirio.models.stpn.factory.RegenerativeComponentsFactory;
+import it.unifi.oris.sirio.petrinet.Marking;
+import it.unifi.oris.sirio.petrinet.MarkingCondition;
 import it.unifi.oris.sirio.petrinet.PetriNet;
+import it.unifi.oris.sirio.petrinet.Transition;
+// sostituisce lo state di Thread
+import it.unifi.oris.sirio.analyzer.state.State;
 
 public class Minion extends Thread {
 	private int id;
@@ -59,7 +75,7 @@ public class Minion extends Thread {
 		}
 		
 	}
-	
+	/*
 	private void bigWorkGenerator(){
 		System.out.println("Thread "+id+" consumo bigWork "+job.toString());
 		if(Math.random()<0.8){
@@ -73,7 +89,7 @@ public class Minion extends Thread {
 			this.uploadSmallWorksQueue.push(new Job(Double.valueOf(z),false));
 		}
 	}
-	
+	*/
 	@Override
 	public void run(){
 		Job job;
@@ -117,24 +133,132 @@ public class Minion extends Thread {
 	//tipo 0
 	private void doInitialRegenerationsJob(Job job){
 		
+		//estraggo la rigenerazione corrente
 		DeterministicEnablingState current = job.getRegeneration();
-		
+		//faccio un cast al Job per avere la visibilita' di alcuni metodi
 		InitialRegenerationJob myJob = (InitialRegenerationJob)job;
 		
-		RegenerativeComponentsFactory f = new RegenerativeComponentsFactory(
-				false,
-				null,
-				null,
-				true,
-				myJob.getPostProcessor(),
-				myJob.getEnumerationPolicy(),
-				OmegaBigDecimal.POSITIVE_INFINITY,
-				myJob.getMarkingCondition(),
-				null,
-				0,
-				null);
+		//ottengo le copie del RegenerativeComponentsFactory e della PN
+		RegenerativeComponentsFactory f = myJob.getRegenerativeComponentsFactory();
+		PetriNet petriNet = myJob.getPN();
+		MarkingCondition absorbingCondition = myJob.getAbsorbingCondition();
+		RegenerativeComponentsFactoryAndPetriNetMaker fMaker = myJob.getMaker();
 		
+		//creo stateBuilder locale
+		SteadyStateInitialStateBuilder stateBuilder = new SteadyStateInitialStateBuilder(petriNet);
 		
+		//creo un analyzer locale
+		Analyzer<PetriNet, Transition> analyzer = new Analyzer<PetriNet,Transition>(
+				f,
+				petriNet,
+				stateBuilder.build(current));
+		
+		//creazione del succession Graph locale
+		SuccessionGraph graph = analyzer.analyze(); 
+		
+		Deque<Node> stack = new LinkedList<Node>();
+		stack.push(graph.getRoot());
+		
+		while(!stack.isEmpty()){ // while VERDE
+			
+			Node n = stack.pop();
+			
+			if(n!=null){
+				
+				//necessario per evitare di usare State della classe Thread
+				it.unifi.oris.sirio.analyzer.state.State s = graph.getState(n);
+				
+				PetriStateFeature petriFeature = s.getFeature(PetriStateFeature.class);
+				StochasticStateFeature stochasticFeature = s.getFeature(StochasticStateFeature.class);
+				
+				if(absorbingCondition.evaluate(petriFeature.getMarking())){
+					
+					// GENERARE NUOVO LAVORO DI TIPO 1
+					Job type1Job = new AbsorbingMarkingJob(myJob.getAbsorbingMarkings(), petriFeature.getMarking());
+					// AGGIUNGERE TYPE1JOB ALLA CODA DI UPLOAD DI TIPO 1
+				
+				}else{
+					
+					if(s.hasFeature(Regeneration.class)){
+						
+						DeterministicEnablingState regeneration = 
+							(DeterministicEnablingState) 
+								s.getFeature(Regeneration.class).getValue();
+						
+						//CREO LAVORO DI TIPO 2
+						Job type2Job = new ReachedRegenerationJob(
+								myJob.getReachedRegenerations(), 
+								regeneration,
+								/* variabili per il tipo 0, devono essere copie!*/
+								fMaker,
+								fMaker.getPetriNetCopy(),
+								myJob.getAbsorbingMarkings(),
+								myJob.getRegenerationClasses(),
+								myJob.getSojourMap(),
+								myJob.getLocalClasses()
+								);
+						
+						//CARICARE type2Job NELLA CODA DI UPLOAD DI TIPO 2
+						
+					}
+					
+					//FIXME
+					/*if(s.hasFeature(Regeneration.class)){
+						someTimesRegenerativeMarkings.add(petriFeature.getMarking());
+					}else{
+					    someNotTimesRegenerativeMarkings.add(petriFeature.getMarking());
+					}*/  
+					
+					if( s.hasFeature(Regeneration.class) &&
+						graph.getSuccessors(n).size()==0 &&
+						(!n.equals(graph.getRoot())) &&
+						(!absorbingCondition.evaluate(petriFeature.getMarking())) ||
+					    (false && graph.getSuccessors(n).size()==0)){
+							
+							DeterministicEnablingState regenerationStar = 
+								(DeterministicEnablingState) 
+									s.getFeature(Regeneration.class).getValue();						
+							
+							//CREO UN LAVORO DI TIPO 3
+							Job type3Job = new RegenerationClassesJob(
+								myJob.getRegenerationClasses(),
+								current,
+								regenerationStar,
+								s);
+							
+							//CARICARE JOB NELLA PILA DI UPLOAD DI TIPO 3
+							
+					}else{
+						
+						//CREO UN LAVORO DI TIPO 4
+						Job type4Job = new SojourTimeJob(
+								graph,
+								n,
+								stochasticFeature,
+								myJob.getSojourMap(),
+								s,
+								petriFeature.getMarking(),
+								current,
+								myJob.getLocalClasses());
+						
+						//CARICARE LAVORO 4 NELLA PILA 4
+						
+					}//fine if enorme
+					
+					stack.push(null);
+					
+					for(Node m : graph.getSuccessors(n)){
+						stack.push(m);
+					}
+					
+						
+				}
+				
+			}/*else{
+				//cavolata su offset
+			}*/
+			
+		}
 		
 	}
 	
