@@ -53,7 +53,7 @@ public class SojourTimeJob extends Job{
 		
 	}
 	
-	protected Job executeJob(){
+	protected LocalClassesAndSojourMapJob executeJob(){
 		
 		Set<Succession> successions = graph.getOutgoingSuccessions(n);
 		
@@ -76,7 +76,7 @@ public class SojourTimeJob extends Job{
 		}
 		
 		// a questo punto creare un Job 5
-		Job ret = 
+		LocalClassesAndSojourMapJob ret = 
 			new LocalClassesAndSojourMapJob(localClasses, current, m, s, sojourMap, sojourTime);
 		
 		

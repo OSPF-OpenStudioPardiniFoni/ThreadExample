@@ -28,14 +28,25 @@ import it.unifi.oris.sirio.analyzer.state.State;
 public class Minion extends Thread {
 	private int id;
 	private SyncStatus status;
-	private WorkQueue uploadBigWorksQueue;
-	private WorkQueue uploadSmallWorksQueue;
+	
+	//CODE DI UPLOAD
+	private WorkQueue type0UploadWorkQueue;
+	private WorkQueue type1UploadWorkQueue;
+	private WorkQueue type2UploadWorkQueue;
+	private WorkQueue type3UploadWorkQueue;
+	private WorkQueue type4UploadWorkQueue;
+	private WorkQueue type5UploadWorkQueue;
+	
+	//CODA DI CONSUMO (LAVORI CORRENTI, SINGOLI O A BLOCCHI)
 	private SynchedContainer myWork;
-	private Job job;
 	
 	
-	private SharedVariable sharedVariableOwner;
-	private LinkedList<Double> sharedVariable;
+	// Variabili Owner per le code a blocchi (con variabile condivisa)
+	private SharedVariable type1SharedVariableOwner;
+	private SharedVariable type2SharedVariableOwner;
+	private SharedVariable type3SharedVariableOwner;
+	private SharedVariable type5SharedVariableOwner;
+	
 	
 	//per parallelizzare il lavoro 0
 	private RegenerativeComponentsFactory f;
@@ -44,37 +55,50 @@ public class Minion extends Thread {
 	
 	public Minion(
 			int id,
-			SyncStatus status, 
-			WorkQueue w, 
-			WorkQueue small,
+			SyncStatus status,
 			SynchedContainer work, 
-			SharedVariable sharedVariableOwner, 
-			LinkedList<Double> sharedVariable,
+			WorkQueue t0, 
+			WorkQueue t1,
+			WorkQueue t2,
+			WorkQueue t3,
+			WorkQueue t4,
+			WorkQueue t5,
+			SharedVariable svo1,
+			SharedVariable svo2,
+			SharedVariable svo3,
+			SharedVariable svo5,
 			/* variabili nuove, non toccare*/
 			RegenerativeComponentsFactory f,
 			PetriNet petriNet
 			){
+		
 		this.id=id;
 		this.status=status;
-		this.uploadBigWorksQueue=w;
-		this.uploadSmallWorksQueue=small;
+		
+		//Inizializzo il lavoro corrente
 		this.myWork=work;
 		
-		this.sharedVariableOwner=sharedVariableOwner;
-		this.sharedVariable=sharedVariable;
-	}
-	
-	private boolean checkParity(double d){
-		int r = (int)(d);
-		if(r%2==0){
-			//pari
-			return true;
-		}else{
-			//dispari
-			return false;
-		}
+		//Inizializzo le code di Upload
+		this.type0UploadWorkQueue=t0;
+		this.type1UploadWorkQueue=t1;
+		this.type2UploadWorkQueue=t2;
+		this.type3UploadWorkQueue=t3;
+		this.type4UploadWorkQueue=t4;
+		this.type5UploadWorkQueue=t5;
+		
+		this.f=f;
+		this.petriNet=petriNet;
+		
+		//Salvo le shared variable
+		this.type1SharedVariableOwner=svo1;
+		this.type2SharedVariableOwner=svo2;
+		this.type3SharedVariableOwner=svo3;
+		this.type5SharedVariableOwner=svo5;
+		
 		
 	}
+	
+	
 	/*
 	private void bigWorkGenerator(){
 		System.out.println("Thread "+id+" consumo bigWork "+job.toString());
@@ -93,6 +117,7 @@ public class Minion extends Thread {
 	@Override
 	public void run(){
 		Job job;
+		int currentJobType;
 		while(true){
 			
 			// fase 0 estrarre il job
@@ -102,8 +127,10 @@ public class Minion extends Thread {
 				break;
 			}
 			
+			currentJobType=job.getType();
+			
 			//fase 1 individuare il tipo di Job
-			switch(1/*job.getType()*/){
+			switch(currentJobType){
 				case 0:
 					doInitialRegenerationsJob(job);
 					break;
@@ -124,7 +151,25 @@ public class Minion extends Thread {
 					break;
 			}
 			
-			
+			if(this.myWork.isEmpty()){
+				
+				switch(currentJobType){
+					case 1:
+						this.type1SharedVariableOwner.setID(-1);
+						break;
+					case 2:
+						this.type2SharedVariableOwner.setID(-1);
+						break;
+					case 3:
+						this.type3SharedVariableOwner.setID(-1);
+						break;
+					case 5:
+						this.type5SharedVariableOwner.setID(-1);
+						break;
+				}
+				
+				status.setIdle(id);
+			}
 			
 		}
 	
@@ -176,6 +221,7 @@ public class Minion extends Thread {
 					// GENERARE NUOVO LAVORO DI TIPO 1
 					Job type1Job = new AbsorbingMarkingJob(myJob.getAbsorbingMarkings(), petriFeature.getMarking());
 					// AGGIUNGERE TYPE1JOB ALLA CODA DI UPLOAD DI TIPO 1
+					this.type1UploadWorkQueue.push(type1Job);
 				
 				}else{
 					
@@ -199,7 +245,7 @@ public class Minion extends Thread {
 								);
 						
 						//CARICARE type2Job NELLA CODA DI UPLOAD DI TIPO 2
-						
+						this.type2UploadWorkQueue.push(type2Job);
 					}
 					
 					//FIXME
@@ -227,7 +273,7 @@ public class Minion extends Thread {
 								s);
 							
 							//CARICARE JOB NELLA PILA DI UPLOAD DI TIPO 3
-							
+							this.type3UploadWorkQueue.push(type3Job);
 					}else{
 						
 						//CREO UN LAVORO DI TIPO 4
@@ -242,7 +288,7 @@ public class Minion extends Thread {
 								myJob.getLocalClasses());
 						
 						//CARICARE LAVORO 4 NELLA PILA 4
-						
+						this.type4UploadWorkQueue.push(type4Job);
 					}//fine if enorme
 					
 					stack.push(null);
@@ -274,6 +320,7 @@ public class Minion extends Thread {
 			// nulla
 		}else{
 			// metti nella pila di upload 0 ret
+			this.type0UploadWorkQueue.push(ret);
 		}
 		
 	}
@@ -287,6 +334,7 @@ public class Minion extends Thread {
 	private void doEvaluateSojourTimeJob(Job job){
 		Job ret = job.executeJob();
 		// aggiungi ret alla upload 5
+		this.type5UploadWorkQueue.push(ret);
 	}
 	
 	//tipo 5

@@ -40,4 +40,8 @@ public class WorkQueue {
 	public void addAll(WorkQueue minionsQueues){
 		bigWork.addAll(minionsQueues.getInnerList());
 	}
+	
+	public int size(){
+		return bigWork.size();
+	}
 }
