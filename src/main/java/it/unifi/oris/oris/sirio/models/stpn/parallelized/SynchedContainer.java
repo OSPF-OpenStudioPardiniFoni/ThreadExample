@@ -1,4 +1,4 @@
-package main;
+package it.unifi.oris.oris.sirio.models.stpn.parallelized;
 
 
 public class SynchedContainer {

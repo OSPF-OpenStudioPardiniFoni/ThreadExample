@@ -1,4 +1,4 @@
-package main;
+package it.unifi.oris.oris.sirio.models.stpn.parallelized;
 
 import it.unifi.oris.sirio.analyzer.SuccessionProcessor;
 import it.unifi.oris.sirio.analyzer.log.AnalysisMonitor;

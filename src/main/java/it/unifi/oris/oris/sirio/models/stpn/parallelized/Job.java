@@ -1,4 +1,4 @@
-package main;
+package it.unifi.oris.oris.sirio.models.stpn.parallelized;
 
 import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 

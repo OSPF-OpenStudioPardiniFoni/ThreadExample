@@ -1,4 +1,4 @@
-package main;
+package it.unifi.oris.oris.sirio.models.stpn.parallelized;
 
 import java.util.Set;
 import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
