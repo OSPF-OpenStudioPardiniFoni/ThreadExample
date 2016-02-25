@@ -38,6 +38,7 @@ public class LocalClassesAndSojourMapJob extends Job{
 		this.s = s;
 		this.m = m;
 		this.sojourMap = sojourMap;
+		this.sojourTime=sojourTime;
 		
 	}
 	
@@ -62,6 +63,18 @@ public class LocalClassesAndSojourMapJob extends Job{
 		if(!sojourMap.get(current).containsKey(m)){
 			sojourMap.get(current).put(m, BigDecimal.ZERO);
 		}
+		
+		if(current==null)
+			System.out.println("Current nullo");
+		
+		if(sojourMap==null)
+			System.out.println("SojourMap nullo");
+		
+		if(m==null)
+			System.out.println("m nullo");
+		
+		if(sojourTime==null)
+			System.out.println("sojourTime nullo");
 		
 		sojourMap.get(current).replace(m, sojourMap.get(current).get(m).add(sojourTime));
 		

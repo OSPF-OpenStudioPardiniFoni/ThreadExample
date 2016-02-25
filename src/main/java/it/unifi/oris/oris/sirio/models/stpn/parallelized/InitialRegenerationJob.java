@@ -15,7 +15,7 @@ import it.unifi.oris.sirio.petrinet.PetriNet;
 
 public class InitialRegenerationJob extends Job{
 
-	private DeterministicEnablingState current; 
+	//private DeterministicEnablingState current; 
 	
 	private RegenerativeComponentsFactory f;
 	private RegenerativeComponentsFactoryAndPetriNetMaker fMaker;
@@ -39,7 +39,7 @@ public class InitialRegenerationJob extends Job{
 			){
 		
 		this.type = 0; // Job di tipo 0 
-		this.current=current;
+		this.setRegeneration(current);
 		
 		this.fMaker = fMaker;
 		

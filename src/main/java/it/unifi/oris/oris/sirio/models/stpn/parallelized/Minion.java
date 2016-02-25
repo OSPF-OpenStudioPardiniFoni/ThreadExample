@@ -128,6 +128,7 @@ public class Minion extends Thread {
 			}
 			
 			currentJobType=job.getType();
+			System.out.println("\t Minion consuma tipo "+currentJobType+" Job "+job.toString());
 			
 			//fase 1 individuare il tipo di Job
 			switch(currentJobType){
@@ -152,7 +153,7 @@ public class Minion extends Thread {
 			}
 			
 			if(this.myWork.isEmpty()){
-				
+				System.out.println("\t Minion non ho nulla da consumare");
 				switch(currentJobType){
 					case 1:
 						this.type1SharedVariableOwner.setID(-1);
@@ -167,7 +168,7 @@ public class Minion extends Thread {
 						this.type5SharedVariableOwner.setID(-1);
 						break;
 				}
-				
+				System.out.println("\t Minion mi setto idle");
 				status.setIdle(id);
 			}
 			
@@ -191,7 +192,12 @@ public class Minion extends Thread {
 		
 		//creo stateBuilder locale
 		SteadyStateInitialStateBuilder stateBuilder = new SteadyStateInitialStateBuilder(petriNet);
-		
+		if(current==null){
+			System.out.println("Current null");
+		}
+		if(stateBuilder==null){
+			System.out.println("Builder null");
+		}
 		//creo un analyzer locale
 		Analyzer<PetriNet, Transition> analyzer = new Analyzer<PetriNet,Transition>(
 				f,

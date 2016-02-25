@@ -11,6 +11,10 @@ public abstract class Job {
 		return current;
 	}
 	
+	protected void setRegeneration(DeterministicEnablingState ir){
+		current=ir;
+	}
+	
 	protected int getType(){
 		return type;
 	}

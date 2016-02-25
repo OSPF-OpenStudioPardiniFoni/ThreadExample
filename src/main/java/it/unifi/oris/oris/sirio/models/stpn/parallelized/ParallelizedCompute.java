@@ -95,6 +95,8 @@ public class ParallelizedCompute {
         
         //CREAZIONE DEL PRIMO LAVORO 
         //(CONTIENE I RIFERIMENTI A TUTTE LE VARIABILI GLOBALI DA POPOLARE)
+        System.out.println("Initial Regeneration "+initialRegeneration.toString());
+        
         Job first = new InitialRegenerationJob(
     			initialRegeneration,
     			fMaker,
@@ -103,6 +105,8 @@ public class ParallelizedCompute {
     			a.getRegenerationClasses(),
     			a.getSojournMap(),
     			a.getLocalClasses());
+        
+        System.out.println("Creazione Master...");
         
         Master m = new Master(first, fMaker);
         
@@ -129,7 +133,7 @@ public class ParallelizedCompute {
         a.setSteadyState(calculateSteadyState(a));
 
         
-        System.out.println("REGENERATION CLASSES = "+a.getRegenerationClasses().size());
+        System.out.println("REGENERATION CLASSES PARALLELIZZATO= "+a.getRegenerationClasses().size());
 		return a;
 	}
 }

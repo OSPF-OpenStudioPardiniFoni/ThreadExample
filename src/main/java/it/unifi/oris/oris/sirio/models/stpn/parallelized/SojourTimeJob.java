@@ -79,7 +79,7 @@ public class SojourTimeJob extends Job{
 		LocalClassesAndSojourMapJob ret = 
 			new LocalClassesAndSojourMapJob(localClasses, current, m, s, sojourMap, sojourTime);
 		
-		
+		System.out.println("Execute Tipo 4 genera sojourTime "+sojourTime.toString());
 		return ret;
 	}
 
