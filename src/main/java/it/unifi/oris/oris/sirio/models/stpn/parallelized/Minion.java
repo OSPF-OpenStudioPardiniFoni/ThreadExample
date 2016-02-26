@@ -24,6 +24,7 @@ import it.unifi.oris.sirio.petrinet.PetriNet;
 import it.unifi.oris.sirio.petrinet.Transition;
 // sostituisce lo state di Thread
 import it.unifi.oris.sirio.analyzer.state.State;
+import it.unifi.oris.sirio.analyzer.state.StateBuilder;
 
 public class Minion extends Thread {
 	private int id;
@@ -128,7 +129,7 @@ public class Minion extends Thread {
 			}
 			
 			currentJobType=job.getType();
-			System.out.println("\t Minion consuma tipo "+currentJobType+" Job "+job.toString());
+			System.out.println("\t Minion "+id+" consuma tipo "+currentJobType+" Job "+job.toString());
 			
 			//fase 1 individuare il tipo di Job
 			switch(currentJobType){
@@ -153,7 +154,7 @@ public class Minion extends Thread {
 			}
 			
 			if(this.myWork.isEmpty()){
-				System.out.println("\t Minion non ho nulla da consumare");
+				System.out.println("\t Minion "+id+" non ho nulla da consumare");
 				switch(currentJobType){
 					case 1:
 						this.type1SharedVariableOwner.setID(-1);
@@ -168,7 +169,7 @@ public class Minion extends Thread {
 						this.type5SharedVariableOwner.setID(-1);
 						break;
 				}
-				System.out.println("\t Minion mi setto idle");
+				System.out.println("\t Minion "+id+" mi setto idle");
 				status.setIdle(id);
 			}
 			
@@ -191,18 +192,16 @@ public class Minion extends Thread {
 		RegenerativeComponentsFactoryAndPetriNetMaker fMaker = myJob.getMaker();
 		
 		//creo stateBuilder locale
-		SteadyStateInitialStateBuilder stateBuilder = new SteadyStateInitialStateBuilder(petriNet);
-		if(current==null){
-			System.out.println("Current null");
-		}
-		if(stateBuilder==null){
-			System.out.println("Builder null");
-		}
+		//SteadyStateInitialStateBuilder stateBuilder = new SteadyStateInitialStateBuilder(petriNet);
+		SteadyStateInitialStateBuilder stateBuilder = job.getStateBuilder();
+		
+		it.unifi.oris.sirio.analyzer.state.State ss = stateBuilder.build(current);
+		
 		//creo un analyzer locale
 		Analyzer<PetriNet, Transition> analyzer = new Analyzer<PetriNet,Transition>(
 				f,
 				petriNet,
-				stateBuilder.build(current));
+				ss);
 		
 		//creazione del succession Graph locale
 		SuccessionGraph graph = analyzer.analyze(); 
@@ -249,6 +248,8 @@ public class Minion extends Thread {
 								myJob.getSojourMap(),
 								myJob.getLocalClasses()
 								);
+						
+						type2Job.setStateBuilder(myJob.getStateBuilder());
 						
 						//CARICARE type2Job NELLA CODA DI UPLOAD DI TIPO 2
 						this.type2UploadWorkQueue.push(type2Job);
@@ -325,6 +326,7 @@ public class Minion extends Thread {
 		if(ret == null){
 			// nulla
 		}else{
+			ret.setStateBuilder(job.getStateBuilder());
 			// metti nella pila di upload 0 ret
 			this.type0UploadWorkQueue.push(ret);
 		}

@@ -8,7 +8,9 @@ import it.unifi.oris.oris.sirio.models.stpn.SteadyStateInitialStateBuilder;
 import it.unifi.oris.oris.sirio.models.stpn.SteadyStatePostProcessor;
 import it.unifi.oris.oris.sirio.tests.TestCase;
 import it.unifi.oris.oris.sirio.tests.TestCase2ParallelTasks;
+import it.unifi.oris.oris.sirio.tests.TestCaseRejuvenation;
 import it.unifi.oris.oris.sirio.tests.TestCaseSMP;
+import it.unifi.oris.oris.sirio.tests.TestFoniPardini;
 import it.unifi.oris.sirio.analyzer.policy.FIFOPolicy;
 import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 import it.unifi.oris.sirio.petrinet.Marking;
@@ -19,7 +21,7 @@ public class MainClass {
 	public static void main(String[] args) throws InterruptedException{
 		// TODO Auto-generated method stub
 		System.out.println("Lancio compute");
-		TestCase test = new TestCase2ParallelTasks();
+		TestCase test = new TestFoniPardini();
         SteadyStateInitialStateBuilder sb = new SteadyStateInitialStateBuilder(test.getPN());
        
         /* RegenerativeSteadyStateAnalysis<DeterministicEnablingState> analysis = RegenerativeSteadyStateAnalysis

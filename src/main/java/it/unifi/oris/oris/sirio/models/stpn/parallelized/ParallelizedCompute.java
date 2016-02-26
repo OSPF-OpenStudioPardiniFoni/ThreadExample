@@ -11,6 +11,7 @@ import java.util.Set;
 
 import it.unifi.oris.oris.sirio.models.stpn.EmbeddedDTMC;
 import it.unifi.oris.oris.sirio.models.stpn.RegenerativeSteadyStateAnalysis;
+import it.unifi.oris.oris.sirio.models.stpn.SteadyStateInitialStateBuilder;
 import it.unifi.oris.sirio.analyzer.SuccessionProcessor;
 import it.unifi.oris.sirio.analyzer.log.AnalysisLogger;
 import it.unifi.oris.sirio.analyzer.log.AnalysisMonitor;
@@ -105,6 +106,8 @@ public class ParallelizedCompute {
     			a.getRegenerationClasses(),
     			a.getSojournMap(),
     			a.getLocalClasses());
+        
+        first.setStateBuilder(new SteadyStateInitialStateBuilder(petriNet));
         
         System.out.println("Creazione Master...");
         

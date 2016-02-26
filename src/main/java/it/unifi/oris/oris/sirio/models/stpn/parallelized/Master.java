@@ -54,7 +54,7 @@ public class Master extends Thread {
 		this.fMaker=fMaker;
 		
 		//Numero di core disponibili
-		int proc = 1;//Runtime.getRuntime().availableProcessors();
+		int proc = 4;//Runtime.getRuntime().availableProcessors();
 		
 		//Vettore dei minion e vettore di stato
 		minions = new Thread[proc];
@@ -193,36 +193,37 @@ public class Master extends Thread {
 				
 				System.out.println("Master carico e svuoto code di upload");
 				//Svuotiamo le code di Upload dei minion nelle code del master
-				for(int j=0; j<minions.length;j++){
+				for(int j=0; j<idleArray.length;j++){
 					//carico
-					this.masterType0WorkQueue.addAll(minionsType0UploadWorksQueues[j]);
-					this.masterType1WorkQueue.addAll(minionsType1UploadWorksQueues[j]);
-					this.masterType2WorkQueue.addAll(minionsType2UploadWorksQueues[j]);
-					this.masterType3WorkQueue.addAll(minionsType3UploadWorksQueues[j]);
-					this.masterType4WorkQueue.addAll(minionsType4UploadWorksQueues[j]);
-					this.masterType5WorkQueue.addAll(minionsType5UploadWorksQueues[j]);
+					this.masterType0WorkQueue.addAll(minionsType0UploadWorksQueues[idleArray[j]]);
+					this.masterType1WorkQueue.addAll(minionsType1UploadWorksQueues[idleArray[j]]);
+					this.masterType2WorkQueue.addAll(minionsType2UploadWorksQueues[idleArray[j]]);
+					this.masterType3WorkQueue.addAll(minionsType3UploadWorksQueues[idleArray[j]]);
+					this.masterType4WorkQueue.addAll(minionsType4UploadWorksQueues[idleArray[j]]);
+					this.masterType5WorkQueue.addAll(minionsType5UploadWorksQueues[idleArray[j]]);
 					
-					System.out.println("Coda 0:"+minionsType0UploadWorksQueues[j].size());
-					System.out.println("Coda 1:"+minionsType1UploadWorksQueues[j].size());
-					System.out.println("Coda 2:"+minionsType2UploadWorksQueues[j].size());
-					System.out.println("Coda 3:"+minionsType3UploadWorksQueues[j].size());
-					System.out.println("Coda 4:"+minionsType4UploadWorksQueues[j].size());
-					System.out.println("Coda 5:"+minionsType5UploadWorksQueues[j].size());
+					
+					System.out.println("Minion "+idleArray[j]+" Coda 0:"+minionsType0UploadWorksQueues[idleArray[j]].size());
+					System.out.println("Coda 1:"+minionsType1UploadWorksQueues[idleArray[j]].size());
+					System.out.println("Coda 2:"+minionsType2UploadWorksQueues[idleArray[j]].size());
+					System.out.println("Coda 3:"+minionsType3UploadWorksQueues[idleArray[j]].size());
+					System.out.println("Coda 4:"+minionsType4UploadWorksQueues[idleArray[j]].size());
+					System.out.println("Coda 5:"+minionsType5UploadWorksQueues[idleArray[j]].size());
 					
 					//svuoto
-					minionsType0UploadWorksQueues[j].clearList();
-					minionsType1UploadWorksQueues[j].clearList();
-					minionsType2UploadWorksQueues[j].clearList();
-					minionsType3UploadWorksQueues[j].clearList();
-					minionsType4UploadWorksQueues[j].clearList();
-					minionsType5UploadWorksQueues[j].clearList();
+					minionsType0UploadWorksQueues[idleArray[j]].clearList();
+					minionsType1UploadWorksQueues[idleArray[j]].clearList();
+					minionsType2UploadWorksQueues[idleArray[j]].clearList();
+					minionsType3UploadWorksQueues[idleArray[j]].clearList();
+					minionsType4UploadWorksQueues[idleArray[j]].clearList();
+					minionsType5UploadWorksQueues[idleArray[j]].clearList();
 				}
 				
 				int index=0;
 				int numFreeMinions=idleArray.length;
-				
+				boolean thereIsWork=true;
 				// Scheduler
-				while(numFreeMinions > 0){
+				while((numFreeMinions > 0) && thereIsWork){
 					System.out.println("INDEX= "+index);
 					
 					// Le code a blocchi sono prioritarie in caso di threshold
@@ -281,6 +282,7 @@ public class Master extends Thread {
 						
 						// c) Carico il lavoro (la coda del master si svuota automaticamente)
 						this.currentWorks[idleArray[index]].loadBlockWork(masterType3WorkQueue);
+					//	this.currentWorks[idleArray[index]].loadSingleWork(masterType3WorkQueue.pop());
 						
 						// d) Epilogo
 						numFreeMinions--;
@@ -338,6 +340,14 @@ public class Master extends Thread {
 						numFreeMinions--;
 						index++;
 					}
+					
+					//Controllo se c'è ancora lavoro da assegnare
+					thereIsWork = (!masterType0WorkQueue.isEmpty())||
+									(!masterType1WorkQueue.isEmpty())||
+									(!masterType2WorkQueue.isEmpty())||
+									(!masterType3WorkQueue.isEmpty())||
+									(!masterType4WorkQueue.isEmpty())||
+									(!masterType5WorkQueue.isEmpty());
 					
 				}
 			}
