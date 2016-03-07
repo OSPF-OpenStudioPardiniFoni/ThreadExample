@@ -102,14 +102,14 @@ public class Minion extends Thread {
 	
 	/*
 	private void bigWorkGenerator(){
-		System.out.println("Thread "+id+" consumo bigWork "+job.toString());
+		//System.out.println("Thread "+id+" consumo bigWork "+job.toString());
 		if(Math.random()<0.8){
 			// genero un nuovo bigwork
 			int x = (int)(Math.random()*10);
 			double y =(double)x;
 			x=(int)(Math.random()*10);
 			double z =(double)x;
-			System.out.println("Thread "+id+" creo smallWork "+y+" e "+z);
+			//System.out.println("Thread "+id+" creo smallWork "+y+" e "+z);
 			this.uploadSmallWorksQueue.push(new Job(Double.valueOf(y),false));
 			this.uploadSmallWorksQueue.push(new Job(Double.valueOf(z),false));
 		}
@@ -129,7 +129,7 @@ public class Minion extends Thread {
 			}
 			
 			currentJobType=job.getType();
-			System.out.println("\t Minion "+id+" consuma tipo "+currentJobType+" Job "+job.toString());
+			////System.out.println("\t Minion "+id+" consuma tipo "+currentJobType+" Job "+job.toString());
 			
 			//fase 1 individuare il tipo di Job
 			switch(currentJobType){
@@ -154,7 +154,7 @@ public class Minion extends Thread {
 			}
 			
 			if(this.myWork.isEmpty()){
-				System.out.println("\t Minion "+id+" non ho nulla da consumare");
+				//System.out.println("\t Minion "+id+" non ho nulla da consumare");
 				switch(currentJobType){
 					case 1:
 						this.type1SharedVariableOwner.setID(-1);
@@ -169,7 +169,7 @@ public class Minion extends Thread {
 						this.type5SharedVariableOwner.setID(-1);
 						break;
 				}
-				System.out.println("\t Minion "+id+" mi setto idle");
+				//System.out.println("\t Minion "+id+" mi setto idle");
 				status.setIdle(id);
 			}
 			
@@ -195,16 +195,20 @@ public class Minion extends Thread {
 		//SteadyStateInitialStateBuilder stateBuilder = new SteadyStateInitialStateBuilder(petriNet);
 		SteadyStateInitialStateBuilder stateBuilder = job.getStateBuilder();
 		
-		it.unifi.oris.sirio.analyzer.state.State ss = stateBuilder.build(current);
-		
-		//creo un analyzer locale
-		Analyzer<PetriNet, Transition> analyzer = new Analyzer<PetriNet,Transition>(
-				f,
-				petriNet,
-				ss);
-		
-		//creazione del succession Graph locale
-		SuccessionGraph graph = analyzer.analyze(); 
+		Analyzer<PetriNet, Transition> analyzer;
+		SuccessionGraph graph;
+		synchronized(stateBuilder){
+			it.unifi.oris.sirio.analyzer.state.State ss = stateBuilder.build(current);
+			
+			//creo un analyzer locale
+			analyzer = new Analyzer<PetriNet,Transition>(
+					f,
+					petriNet,
+					ss);
+			
+			//creazione del succession Graph locale
+			graph = analyzer.analyze(); 
+		}
 		
 		Deque<Node> stack = new LinkedList<Node>();
 		stack.push(graph.getRoot());
@@ -377,7 +381,7 @@ public class Minion extends Thread {
 			
 			
 			//Fase consumo
-			//System.out.println("Thread "+id+" consumo "+job.toString());
+			////System.out.println("Thread "+id+" consumo "+job.toString());
 			
 			
 			
@@ -401,9 +405,9 @@ public class Minion extends Thread {
 					this.uploadBigWorksQueue.push(new Job(job.getInnerData(),true));
 				}
 				// libero l'owner
-				System.out.println("Minion "+id+" libera Owner "+job.getInnerData().doubleValue());
+				//System.out.println("Minion "+id+" libera Owner "+job.getInnerData().doubleValue());
 				sharedVariableOwner.setID(-1);
-				System.out.println(sharedVariableOwner.getID());
+				//System.out.println(sharedVariableOwner.getID());
 			}
 		
 			//timeLog (2)
@@ -417,13 +421,13 @@ public class Minion extends Thread {
 		// media tempi:
 		if(jobsConsumed!=0){
 			double avg = sum/jobsConsumed;
-			System.out.println("Thread "+id+" jobs consumed = "+jobsConsumed+" avg = "+avg) ;
+			//System.out.println("Thread "+id+" jobs consumed = "+jobsConsumed+" avg = "+avg) ;
 		}
 		
 		if(uploadBigWorksQueue.isEmpty()){
-			//System.out.println("Minion "+id+" termina con coda vuota");
+			////System.out.println("Minion "+id+" termina con coda vuota");
 		}else{
-			System.out.println("Minion "+id+" MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe");
+			//System.out.println("Minion "+id+" MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEe");
 		}
 	}*/
 }

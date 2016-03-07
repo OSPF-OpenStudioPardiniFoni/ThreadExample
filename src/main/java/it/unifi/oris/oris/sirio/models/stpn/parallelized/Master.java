@@ -118,7 +118,7 @@ public class Master extends Thread {
 							);
 			
 		}
-		System.out.println("...Riuscita! :-)");
+		//System.out.println("...Riuscita! :-)");
 		
 	}
 	
@@ -133,15 +133,15 @@ public class Master extends Thread {
 	
 	@Override
 	public void run(){
-		System.out.println("Master: lancio i minion");
+		//System.out.println("Master: lancio i minion");
 		startMinions();
 		
 		currentWorks[0].loadSingleWork(masterType0WorkQueue.pop());
 		
 		while(true){
-			System.out.println("Master attendo Idle");
+			//System.out.println("Master attendo Idle");
 			minionsStatus.waitForIdles();
-			System.out.println("Master risveglio");
+			//System.out.println("Master risveglio");
 			//Il Master è stato risvegliato
 			
 			//Controllo della CONDIZIONE DI TERMINAZIONE
@@ -160,7 +160,7 @@ public class Master extends Thread {
 					type3SharedVariableOwner.getID()==-1 &&
 					type5SharedVariableOwner.getID()==-1){
 				
-				System.out.println("Master: Pre-condizione di Terminazione");
+				//System.out.println("Master: Pre-condizione di Terminazione");
 				// Allora controllo che tutte le code di upload dei minion siano vuote
 				boolean test=true;
 				for(int i=0; i<minionsType0UploadWorksQueues.length;i++){
@@ -174,24 +174,24 @@ public class Master extends Thread {
 				}
 				
 				if(test){
-					System.out.println("Master condizione di terminazione verificata");
+					//System.out.println("Master condizione di terminazione verificata");
 					break;
 				}
-				System.out.println("Master condizione di terminazione NON verificata");
+				//System.out.println("Master condizione di terminazione NON verificata");
 			}
 			//Fine controllo della CONDIZIONE DI TERMINAZIONE
-			System.out.println("Master vedo se ci sono Idle");
+			//System.out.println("Master vedo se ci sono Idle");
 			//Ottengo la lista dei minion Idle
 			LinkedList<Integer> idleIDs = minionsStatus.getIdleList();
 			
 			//Se la lista non è nulla la converto in Array
 			if(idleIDs != null){
-				System.out.println("Master trovato Idle");
+				//System.out.println("Master trovato Idle");
 				
 				Integer idleArray[] = new Integer[idleIDs.size()];
 				idleArray = idleIDs.toArray(idleArray);
 				
-				System.out.println("Master carico e svuoto code di upload");
+				//System.out.println("Master carico e svuoto code di upload");
 				//Svuotiamo le code di Upload dei minion nelle code del master
 				for(int j=0; j<idleArray.length;j++){
 					//carico
@@ -203,12 +203,12 @@ public class Master extends Thread {
 					this.masterType5WorkQueue.addAll(minionsType5UploadWorksQueues[idleArray[j]]);
 					
 					
-					System.out.println("Minion "+idleArray[j]+" Coda 0:"+minionsType0UploadWorksQueues[idleArray[j]].size());
-					System.out.println("Coda 1:"+minionsType1UploadWorksQueues[idleArray[j]].size());
-					System.out.println("Coda 2:"+minionsType2UploadWorksQueues[idleArray[j]].size());
-					System.out.println("Coda 3:"+minionsType3UploadWorksQueues[idleArray[j]].size());
-					System.out.println("Coda 4:"+minionsType4UploadWorksQueues[idleArray[j]].size());
-					System.out.println("Coda 5:"+minionsType5UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Minion "+idleArray[j]+" Coda 0:"+minionsType0UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Coda 1:"+minionsType1UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Coda 2:"+minionsType2UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Coda 3:"+minionsType3UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Coda 4:"+minionsType4UploadWorksQueues[idleArray[j]].size());
+					//System.out.println("Coda 5:"+minionsType5UploadWorksQueues[idleArray[j]].size());
 					
 					//svuoto
 					minionsType0UploadWorksQueues[idleArray[j]].clearList();
@@ -224,14 +224,14 @@ public class Master extends Thread {
 				boolean thereIsWork=true;
 				// Scheduler
 				while((numFreeMinions > 0) && thereIsWork){
-					System.out.println("INDEX= "+index);
+					//System.out.println("INDEX= "+index);
 					
 					// Le code a blocchi sono prioritarie in caso di threshold
 					if((numFreeMinions>0 && (!masterType1WorkQueue.isEmpty())) &&
 							(masterType1WorkQueue.size()>this.TYPE_1_THRESHOLD || 
 									(this.masterType0WorkQueue.isEmpty() && 
 									 this.masterType4WorkQueue.isEmpty()))){
-						System.out.println("Master schedulato tipo 1");
+						//System.out.println("Master schedulato tipo 1");
 						
 						// a) Assegnamento dell'owner
 						this.type1SharedVariableOwner.setID(idleArray[index]);
@@ -253,7 +253,7 @@ public class Master extends Thread {
 									(this.masterType0WorkQueue.isEmpty() && 
 									 this.masterType4WorkQueue.isEmpty()))){
 						
-						System.out.println("Master schedulato tipo 2");
+						//System.out.println("Master schedulato tipo 2");
 						// a) Assegnamento dell'owner
 						this.type2SharedVariableOwner.setID(idleArray[index]);
 						
@@ -272,7 +272,7 @@ public class Master extends Thread {
 							(masterType3WorkQueue.size()>this.TYPE_3_THRESHOLD || 
 									(this.masterType0WorkQueue.isEmpty() && 
 									 this.masterType4WorkQueue.isEmpty()))){
-						System.out.println("Master schedulato tipo 3");
+						//System.out.println("Master schedulato tipo 3");
 						
 						// a) Assegnamento dell'owner
 						this.type3SharedVariableOwner.setID(idleArray[index]);
@@ -293,7 +293,7 @@ public class Master extends Thread {
 							(masterType5WorkQueue.size()>this.TYPE_5_THRESHOLD || 
 									(this.masterType0WorkQueue.isEmpty() && 
 									 this.masterType4WorkQueue.isEmpty()))){
-						System.out.println("Master schedulato tipo 5");
+						//System.out.println("Master schedulato tipo 5");
 						
 						// a) Assegnamento dell'owner
 						this.type5SharedVariableOwner.setID(idleArray[index]);
@@ -313,7 +313,7 @@ public class Master extends Thread {
 							(masterType4WorkQueue.size()>this.TYPE_4_THRESHOLD || 
 									this.masterType0WorkQueue.isEmpty())){
 						
-						System.out.println("Master schedulato tipo 4");
+						//System.out.println("Master schedulato tipo 4");
 						// a) Non c'è assegnamento dell'owner
 						
 						// b) Lo metto Running
@@ -329,7 +329,7 @@ public class Master extends Thread {
 					
 					if(numFreeMinions>0 && (!this.masterType0WorkQueue.isEmpty())){
 						// a) Non c'è assegnamento dell'owner
-						System.out.println("Master schedulato tipo 0");
+						//System.out.println("Master schedulato tipo 0");
 						// b) Lo metto Running
 						this.minionsStatus.setRunning(idleArray[index]);
 						
@@ -355,7 +355,7 @@ public class Master extends Thread {
 		}
 		
 		// Abbiamo la condizione di terminazione, diamo l'interrupt a tutti i minions.
-		System.out.println("Master lancio interrupt");		
+		//System.out.println("Master lancio interrupt");		
 		for(int i=0;i<minions.length;i++){
 			minions[i].interrupt();
 		}

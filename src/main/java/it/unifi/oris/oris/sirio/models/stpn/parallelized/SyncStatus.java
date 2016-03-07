@@ -13,7 +13,7 @@ class SyncStatus{
 
 	public synchronized void waitForIdles(){
 		try{
-			wait(2000);
+			wait(500);
 		}catch(InterruptedException e){}
 	}
 
