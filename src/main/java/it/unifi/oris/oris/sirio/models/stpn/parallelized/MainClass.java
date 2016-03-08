@@ -17,9 +17,11 @@ import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 import it.unifi.oris.sirio.petrinet.Marking;
 import it.unifi.oris.sirio.petrinet.MarkingCondition;
 
-public class MainClass {
 
+public class MainClass {
+	
 	public static void main(String[] args) throws InterruptedException{
+		//Thread.sleep(20000);
 		// TODO Auto-generated method stub
 		System.out.println("Lancio compute");
 		TestCase test = new TestFoniPardini();
@@ -29,21 +31,22 @@ public class MainClass {
         SteadyStateInitialStateBuilder sb = new SteadyStateInitialStateBuilder(test.getPN());
        
         long t0=System.currentTimeMillis();
-        //*
+        
         RegenerativeSteadyStateAnalysis<DeterministicEnablingState> analysis = RegenerativeSteadyStateAnalysis
                 .compute(test.getPN(), new DeterministicEnablingState(test.getInitialMarking(),
                         test.getPN()), sb, new SteadyStatePostProcessor(), new FIFOPolicy(),
                         MarkingCondition.NONE, false, false, null, null, false);
-        //*/
+      
         System.out.println("TEMPO TOTALE SEQUENZIALE= "+(System.currentTimeMillis()-t0));
         long t1=System.currentTimeMillis();
-       //* 
+        
         RegenerativeSteadyStateAnalysis<DeterministicEnablingState> analysisp = ParallelizedCompute
                 .parallelizedCompute(test.getPN(), new DeterministicEnablingState(test.getInitialMarking(),
                         test.getPN()), sb, new SteadyStatePostProcessor(), new FIFOPolicy(),
                         MarkingCondition.NONE, false, false, null, null, false);
-        //*/
+        
 		System.out.println("TEMPO TOTALE PARALLELO= "+(System.currentTimeMillis()-t1));
+        System.out.println("fine!");
 		
 	}
 

@@ -54,7 +54,7 @@ public class Master extends Thread {
 		this.fMaker=fMaker;
 		
 		//Numero di core disponibili
-		int proc = 4;//Runtime.getRuntime().availableProcessors();
+		int proc = Runtime.getRuntime().availableProcessors();
 		
 		//Vettore dei minion e vettore di stato
 		minions = new Thread[proc];
