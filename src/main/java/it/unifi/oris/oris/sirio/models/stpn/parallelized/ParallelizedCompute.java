@@ -105,7 +105,9 @@ public class ParallelizedCompute {
     			reachedRegenerations,
     			a.getRegenerationClasses(),
     			a.getSojournMap(),
-    			a.getLocalClasses());
+    			a.getLocalClasses(),
+    			sometimesRegenerativeMarkings,
+    			sometimesNotRegenerativeMarkings);
         
         first.setStateBuilder(new SteadyStateInitialStateBuilder(petriNet));
         
@@ -127,6 +129,9 @@ public class ParallelizedCompute {
         a.setNeverRegenerativeMarkings(new LinkedHashSet<Marking>(sometimesNotRegenerativeMarkings));
         a.getNeverRegenerativeMarkings().removeAll(sometimesRegenerativeMarkings);
   
+       // System.out.println("SomeTimeRegenerative = "+sometimesRegenerativeMarkings.toString());
+        //System.out.println("SomeTimeNotRegenerative = "+sometimesNotRegenerativeMarkings.toString());
+        
         a.setRegenerativeAndNotRegenerativeMarkings(new LinkedHashSet<Marking>(sometimesRegenerativeMarkings));
         a.getRegenerativeAndNotRegenerativeMarkings().retainAll(sometimesNotRegenerativeMarkings);
 

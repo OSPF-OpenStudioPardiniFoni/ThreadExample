@@ -19,6 +19,7 @@ public class Master extends Thread {
 	private final int TYPE_3_THRESHOLD = 256;
 	private final int TYPE_4_THRESHOLD = 25;
 	private final int TYPE_5_THRESHOLD = 256;
+	private final int TYPE_6_THRESHOLD = 256;
 	
 	//Array  delle code di consumo di tutti i minion
 	private SynchedContainer[] currentWorks;
@@ -30,6 +31,7 @@ public class Master extends Thread {
 	private WorkQueue[] minionsType3UploadWorksQueues;
 	private WorkQueue[] minionsType4UploadWorksQueues;
 	private WorkQueue[] minionsType5UploadWorksQueues;
+	private WorkQueue[] minionsType6UploadWorksQueues;
 	
 	private WorkQueue masterType0WorkQueue;
 	private WorkQueue masterType1WorkQueue;
@@ -37,6 +39,7 @@ public class Master extends Thread {
 	private WorkQueue masterType3WorkQueue;
 	private WorkQueue masterType4WorkQueue;
 	private WorkQueue masterType5WorkQueue;
+	private WorkQueue masterType6WorkQueue;
 	
 	private RegenerativeComponentsFactoryAndPetriNetMaker fMaker;
 	
@@ -46,8 +49,9 @@ public class Master extends Thread {
 	private SharedVariable type2SharedVariableOwner;
 	private SharedVariable type3SharedVariableOwner;
 	private SharedVariable type5SharedVariableOwner;
+	private SharedVariable type6SharedVariableOwner;
 	
-	private LinkedList<Double> sharedVariable;
+	//private LinkedList<Double> sharedVariable;
 	
 	public Master(Job first, RegenerativeComponentsFactoryAndPetriNetMaker fMaker){
 		//Mi salvo fMaker
@@ -70,6 +74,7 @@ public class Master extends Thread {
 		minionsType3UploadWorksQueues= new WorkQueue[proc];
 		minionsType4UploadWorksQueues=new WorkQueue[proc];
 		minionsType5UploadWorksQueues= new WorkQueue[proc];
+		minionsType6UploadWorksQueues= new WorkQueue[proc];
 		
 		//Inizializzazione delle code di consumo del master
 		masterType0WorkQueue = new WorkQueue(first);
@@ -78,6 +83,7 @@ public class Master extends Thread {
 		masterType3WorkQueue = new WorkQueue();
 		masterType4WorkQueue = new WorkQueue();
 		masterType5WorkQueue = new WorkQueue();
+		masterType6WorkQueue = new WorkQueue();
 		
 		//TBD
 		// nessuno possiede la shared variable
@@ -85,8 +91,9 @@ public class Master extends Thread {
 		type2SharedVariableOwner= new SharedVariable(); // gia' a -1
 		type3SharedVariableOwner= new SharedVariable(); // gia' a -1
 		type5SharedVariableOwner= new SharedVariable(); // gia' a -1
+		type6SharedVariableOwner= new SharedVariable(); // gia' a -1
 		
-		sharedVariable = new LinkedList<Double>();
+	//	sharedVariable = new LinkedList<Double>();
 		
 		for(int i=0;i<proc;i++){
 			currentWorks[i]=new SynchedContainer();
@@ -97,6 +104,7 @@ public class Master extends Thread {
 			minionsType3UploadWorksQueues[i]= new WorkQueue();
 			minionsType4UploadWorksQueues[i]= new WorkQueue();
 			minionsType5UploadWorksQueues[i]= new WorkQueue();
+			minionsType6UploadWorksQueues[i]= new WorkQueue();
 			
 			minions[i]=
 					new Minion(
@@ -109,10 +117,12 @@ public class Master extends Thread {
 							minionsType3UploadWorksQueues[i],
 							minionsType4UploadWorksQueues[i],
 							minionsType5UploadWorksQueues[i],
+							minionsType6UploadWorksQueues[i],
 							type1SharedVariableOwner,
 							type2SharedVariableOwner,
 							type3SharedVariableOwner,
 							type5SharedVariableOwner,
+							type6SharedVariableOwner,
 							this.fMaker.getFactoryCopy(),
 							this.fMaker.getPetriNetCopy()
 							);
@@ -155,10 +165,12 @@ public class Master extends Thread {
 					masterType3WorkQueue.isEmpty() &&
 					masterType4WorkQueue.isEmpty() &&
 					masterType5WorkQueue.isEmpty() &&
+					masterType6WorkQueue.isEmpty() &&
 					type1SharedVariableOwner.getID()==-1 &&
 					type2SharedVariableOwner.getID()==-1 &&
 					type3SharedVariableOwner.getID()==-1 &&
-					type5SharedVariableOwner.getID()==-1){
+					type5SharedVariableOwner.getID()==-1 &&
+					type6SharedVariableOwner.getID()==-1){
 				
 				//System.out.println("Master: Pre-condizione di Terminazione");
 				// Allora controllo che tutte le code di upload dei minion siano vuote
@@ -170,7 +182,8 @@ public class Master extends Thread {
 							minionsType2UploadWorksQueues[i].isEmpty() &&
 							minionsType3UploadWorksQueues[i].isEmpty() &&
 							minionsType4UploadWorksQueues[i].isEmpty() &&
-							minionsType5UploadWorksQueues[i].isEmpty();
+							minionsType5UploadWorksQueues[i].isEmpty() &&
+							minionsType6UploadWorksQueues[i].isEmpty();
 				}
 				
 				if(test){
@@ -201,6 +214,7 @@ public class Master extends Thread {
 					this.masterType3WorkQueue.addAll(minionsType3UploadWorksQueues[idleArray[j]]);
 					this.masterType4WorkQueue.addAll(minionsType4UploadWorksQueues[idleArray[j]]);
 					this.masterType5WorkQueue.addAll(minionsType5UploadWorksQueues[idleArray[j]]);
+					this.masterType6WorkQueue.addAll(minionsType6UploadWorksQueues[idleArray[j]]);
 					
 					
 					//System.out.println("Minion "+idleArray[j]+" Coda 0:"+minionsType0UploadWorksQueues[idleArray[j]].size());
@@ -217,6 +231,7 @@ public class Master extends Thread {
 					minionsType3UploadWorksQueues[idleArray[j]].clearList();
 					minionsType4UploadWorksQueues[idleArray[j]].clearList();
 					minionsType5UploadWorksQueues[idleArray[j]].clearList();
+					minionsType6UploadWorksQueues[idleArray[j]].clearList();
 				}
 				
 				int index=0;
@@ -309,6 +324,27 @@ public class Master extends Thread {
 						index++;
 					}
 					
+					if((numFreeMinions>0 && (!masterType6WorkQueue.isEmpty())) &&
+							(masterType6WorkQueue.size()>this.TYPE_6_THRESHOLD || 
+									(this.masterType0WorkQueue.isEmpty() && 
+									 this.masterType4WorkQueue.isEmpty()))){
+						//System.out.println("Master schedulato tipo 1");
+						
+						// a) Assegnamento dell'owner
+						this.type6SharedVariableOwner.setID(idleArray[index]);
+						
+						// b) Lo metto Running
+						this.minionsStatus.setRunning(idleArray[index]);
+						
+						// c) Carico il lavoro (la coda del master si svuota automaticamente)
+						this.currentWorks[idleArray[index]].loadBlockWork(masterType6WorkQueue);
+						
+						
+						// d) Epilogo
+						numFreeMinions--;
+						index++;
+					}
+					
 					if((numFreeMinions>0 && (!masterType4WorkQueue.isEmpty()))&& 
 							(masterType4WorkQueue.size()>this.TYPE_4_THRESHOLD || 
 									this.masterType0WorkQueue.isEmpty())){
@@ -347,7 +383,8 @@ public class Master extends Thread {
 									(!masterType2WorkQueue.isEmpty())||
 									(!masterType3WorkQueue.isEmpty())||
 									(!masterType4WorkQueue.isEmpty())||
-									(!masterType5WorkQueue.isEmpty());
+									(!masterType5WorkQueue.isEmpty())||
+									(!masterType6WorkQueue.isEmpty());
 					
 				}
 			}

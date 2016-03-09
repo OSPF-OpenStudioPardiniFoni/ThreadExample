@@ -43,6 +43,7 @@ public class MainClass {
                         test.getPN()), sb, new SteadyStatePostProcessor(), new FIFOPolicy(),
                         MarkingCondition.NONE, false, false, null, null, false);
       	
+        System.out.println("Steady Size = "+analysis.getSteadyState().size());
         System.out.println("Tempo Sequenziale (tot) = "+(System.currentTimeMillis()-t0));
         
         
@@ -55,7 +56,7 @@ public class MainClass {
                         test.getPN()), sb, new SteadyStatePostProcessor(), new FIFOPolicy(),
                         MarkingCondition.NONE, false, false, null, null, false);
         
-        
+        System.out.println("Steady Size = "+analysisp.getSteadyState().size());
 		System.out.println("Tempo Parallelo (tot) = "+(System.currentTimeMillis()-t1));
         
 		System.out.println("----------Fine Test----------\n");

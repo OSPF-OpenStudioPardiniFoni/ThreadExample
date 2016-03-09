@@ -37,6 +37,7 @@ public class Minion extends Thread {
 	private WorkQueue type3UploadWorkQueue;
 	private WorkQueue type4UploadWorkQueue;
 	private WorkQueue type5UploadWorkQueue;
+	private WorkQueue type6UploadWorkQueue;
 	
 	//CODA DI CONSUMO (LAVORI CORRENTI, SINGOLI O A BLOCCHI)
 	private SynchedContainer myWork;
@@ -47,6 +48,7 @@ public class Minion extends Thread {
 	private SharedVariable type2SharedVariableOwner;
 	private SharedVariable type3SharedVariableOwner;
 	private SharedVariable type5SharedVariableOwner;
+	private SharedVariable type6SharedVariableOwner;
 	
 	
 	//per parallelizzare il lavoro 0
@@ -64,10 +66,12 @@ public class Minion extends Thread {
 			WorkQueue t3,
 			WorkQueue t4,
 			WorkQueue t5,
+			WorkQueue t6,
 			SharedVariable svo1,
 			SharedVariable svo2,
 			SharedVariable svo3,
 			SharedVariable svo5,
+			SharedVariable svo6,
 			/* variabili nuove, non toccare*/
 			RegenerativeComponentsFactory f,
 			PetriNet petriNet
@@ -86,6 +90,8 @@ public class Minion extends Thread {
 		this.type3UploadWorkQueue=t3;
 		this.type4UploadWorkQueue=t4;
 		this.type5UploadWorkQueue=t5;
+		this.type6UploadWorkQueue=t6;
+		
 		
 		this.f=f;
 		this.petriNet=petriNet;
@@ -95,6 +101,7 @@ public class Minion extends Thread {
 		this.type2SharedVariableOwner=svo2;
 		this.type3SharedVariableOwner=svo3;
 		this.type5SharedVariableOwner=svo5;
+		this.type6SharedVariableOwner=svo6;
 		
 		
 	}
@@ -151,6 +158,9 @@ public class Minion extends Thread {
 				case 5:
 					doLocalClassesAndSojourMapJob(job);
 					break;
+				case 6:
+					doRegenerativeMarkingJob(job);
+					break;
 			}
 			
 			if(this.myWork.isEmpty()){
@@ -167,6 +177,9 @@ public class Minion extends Thread {
 						break;
 					case 5:
 						this.type5SharedVariableOwner.setID(-1);
+						break;
+					case 6: 
+						this.type6SharedVariableOwner.setID(-1);
 						break;
 				}
 				//System.out.println("\t Minion "+id+" mi setto idle");
@@ -250,7 +263,9 @@ public class Minion extends Thread {
 								myJob.getAbsorbingMarkings(),
 								myJob.getRegenerationClasses(),
 								myJob.getSojourMap(),
-								myJob.getLocalClasses()
+								myJob.getLocalClasses(),
+								myJob.getSometimesRegenerativeMarkings(),
+								myJob.getSometimesNotRegenerativeMarkings()
 								);
 						
 						type2Job.setStateBuilder(myJob.getStateBuilder());
@@ -259,12 +274,15 @@ public class Minion extends Thread {
 						this.type2UploadWorkQueue.push(type2Job);
 					}
 					
-					//FIXME
-					/*if(s.hasFeature(Regeneration.class)){
-						someTimesRegenerativeMarkings.add(petriFeature.getMarking());
-					}else{
-					    someNotTimesRegenerativeMarkings.add(petriFeature.getMarking());
-					}*/  
+					//CREO LAVORO DI TIPO 6
+					InitialRegenerationJob jj = (InitialRegenerationJob) job;
+					
+					Job type6Job = new RegenerativeMarkingsJob(jj.getSometimesRegenerativeMarkings(),
+																jj.getSometimesNotRegenerativeMarkings(),
+																s.hasFeature(Regeneration.class),
+																petriFeature.getMarking());
+					// CARICO LAVORO DI TIPO 6
+					this.type6UploadWorkQueue.push(type6Job);
 					
 					if( s.hasFeature(Regeneration.class) &&
 						graph.getSuccessors(n).size()==0 &&
@@ -351,6 +369,10 @@ public class Minion extends Thread {
 	
 	//tipo 5
 	private void doLocalClassesAndSojourMapJob(Job job){
+		job.executeJob();
+	}
+	
+	private void doRegenerativeMarkingJob(Job job){
 		job.executeJob();
 	}
 	

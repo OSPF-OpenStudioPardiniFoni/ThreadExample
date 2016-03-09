@@ -23,6 +23,8 @@ public class ReachedRegenerationJob extends Job{
 	private Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses;
 	private Map<DeterministicEnablingState, Map<Marking, BigDecimal>> sojourMap;
 	private Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses;
+	private Set<Marking> sometimesNotRegenerativeMarkings;
+	private Set<Marking> sometimesRegenerativeMarkings;
 	
 	protected ReachedRegenerationJob(
 			Set<DeterministicEnablingState> reachedRegenerations, 
@@ -33,7 +35,9 @@ public class ReachedRegenerationJob extends Job{
 			Set<Marking> absorbingMarkings,
 			Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses,
 			Map<DeterministicEnablingState, Map<Marking, BigDecimal>> sojourMap,
-			Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses
+			Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses,
+			Set<Marking> sometimesRegenerativeMarkings,
+			Set<Marking> sometimesNotRegenerativeMarkings
 			){
 		
 		this.type = 2; // tipo 2
@@ -49,6 +53,9 @@ public class ReachedRegenerationJob extends Job{
 		
 		this.sojourMap = sojourMap;
 		this.localClasses = localClasses;
+		
+		this.sometimesRegenerativeMarkings=sometimesRegenerativeMarkings;
+		this.sometimesNotRegenerativeMarkings=sometimesNotRegenerativeMarkings;
 		
 	}
 
@@ -66,7 +73,9 @@ public class ReachedRegenerationJob extends Job{
 					this.reachedRegenerations,
 					this.regenerationClasses,
 					this.sojourMap,
-					this.localClasses
+					this.localClasses,
+					this.sometimesRegenerativeMarkings,
+					this.sometimesNotRegenerativeMarkings
 					);
 		}
 		//non genera nulla

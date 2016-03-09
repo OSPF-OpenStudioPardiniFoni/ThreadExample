@@ -27,6 +27,9 @@ public class InitialRegenerationJob extends Job{
 	private Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses;
 	private Map<DeterministicEnablingState, Map<Marking, BigDecimal>> sojourMap;
 	private Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses;
+	private Set<Marking> sometimesRegenerativeMarkings;
+	private Set<Marking> sometimesNotRegenerativeMarkings;
+	
 	
 	protected InitialRegenerationJob(
 			DeterministicEnablingState current,
@@ -35,7 +38,9 @@ public class InitialRegenerationJob extends Job{
 			Set<DeterministicEnablingState> reachedRegenerations,
 			Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses,
 			Map<DeterministicEnablingState, Map<Marking, BigDecimal>> sojourMap,
-			Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses
+			Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses,
+			Set<Marking> sometimesRegenerativeMarkings,
+			Set<Marking> sometimesNotRegenerativeMarkings
 			){
 		
 		this.type = 0; // Job di tipo 0 
@@ -53,6 +58,9 @@ public class InitialRegenerationJob extends Job{
 		
 		this.sojourMap = sojourMap;
 		this.localClasses = localClasses;
+		
+		this.setSometimesRegenerativeMarkings(sometimesRegenerativeMarkings);
+		this.setSometimesNotRegenerativeMarkings(sometimesNotRegenerativeMarkings);
 	}
 	
 	protected Job executeJob(){
@@ -93,6 +101,22 @@ public class InitialRegenerationJob extends Job{
 	
 	protected Map<DeterministicEnablingState, Map<Marking,Set<State>>> getLocalClasses(){
 		return this.localClasses;
+	}
+
+	public Set<Marking> getSometimesRegenerativeMarkings() {
+		return sometimesRegenerativeMarkings;
+	}
+
+	public void setSometimesRegenerativeMarkings(Set<Marking> sometimesRegenerativeMarkings) {
+		this.sometimesRegenerativeMarkings = sometimesRegenerativeMarkings;
+	}
+
+	public Set<Marking> getSometimesNotRegenerativeMarkings() {
+		return sometimesNotRegenerativeMarkings;
+	}
+
+	public void setSometimesNotRegenerativeMarkings(Set<Marking> sometimesNotRegenerativeMarkings) {
+		this.sometimesNotRegenerativeMarkings = sometimesNotRegenerativeMarkings;
 	}
 	
 }
