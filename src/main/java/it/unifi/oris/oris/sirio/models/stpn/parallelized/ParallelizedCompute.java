@@ -96,7 +96,7 @@ public class ParallelizedCompute {
         
         //CREAZIONE DEL PRIMO LAVORO 
         //(CONTIENE I RIFERIMENTI A TUTTE LE VARIABILI GLOBALI DA POPOLARE)
-        System.out.println("Initial Regeneration "+initialRegeneration.toString());
+        //System.out.println("Initial Regeneration "+initialRegeneration.toString());
         
         Job first = new InitialRegenerationJob(
     			initialRegeneration,
@@ -109,7 +109,7 @@ public class ParallelizedCompute {
         
         first.setStateBuilder(new SteadyStateInitialStateBuilder(petriNet));
         
-        System.out.println("Creazione Master...");
+        //System.out.println("Creazione Master...");
         
         Master m = new Master(first, fMaker);
         
@@ -118,25 +118,28 @@ public class ParallelizedCompute {
         
 		
 		//-------------------------------------------------------------------------------------------//
+		
+		long t0 = System.currentTimeMillis();
+		
 		a.setAlwaysRegenerativeMarkings(new LinkedHashSet<Marking>(sometimesRegenerativeMarkings));
         a.getAlwaysRegenerativeMarkings().removeAll(sometimesNotRegenerativeMarkings);
-
+     
         a.setNeverRegenerativeMarkings(new LinkedHashSet<Marking>(sometimesNotRegenerativeMarkings));
         a.getNeverRegenerativeMarkings().removeAll(sometimesRegenerativeMarkings);
-
-        a.setRegenerativeAndNotRegenerativeMarkings(new LinkedHashSet<Marking>(
-                sometimesRegenerativeMarkings));
+  
+        a.setRegenerativeAndNotRegenerativeMarkings(new LinkedHashSet<Marking>(sometimesRegenerativeMarkings));
         a.getRegenerativeAndNotRegenerativeMarkings().retainAll(sometimesNotRegenerativeMarkings);
 
         a.setReachableMarkings(new LinkedHashSet<Marking>(sometimesRegenerativeMarkings));
         a.getReachableMarkings().addAll(sometimesNotRegenerativeMarkings);
-
+        
         a.setRegenerations(reachedRegenerations);
         
         a.setSteadyState(calculateSteadyState(a));
-
         
-        System.out.println("REGENERATION CLASSES PARALLELIZZATO= "+a.getRegenerationClasses().size());
+        System.out.println("\t tratto lineare = "+(System.currentTimeMillis()-t0));
+        
+        //System.out.println("REGENERATION CLASSES PARALLELIZZATO= "+a.getRegenerationClasses().size());
 		return a;
 	}
 }
