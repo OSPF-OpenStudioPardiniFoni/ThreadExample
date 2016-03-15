@@ -46,6 +46,7 @@ public class ParallelizedCompute {
             steadyState.put(mrk, aij);
         }
         for (Marking mrk : a.getReachableMarkings()) {
+        	//System.out.println("MRK ="+mrk.toString());
             steadyState.replace(mrk,
                     steadyState.get(mrk).divide(normalizationFactor, MathContext.DECIMAL128));
         }
@@ -117,7 +118,7 @@ public class ParallelizedCompute {
         
         m.start();
 		m.join();
-        
+        System.out.println("Parallelismo finito");
 		
 		//-------------------------------------------------------------------------------------------//
 		

@@ -5,12 +5,12 @@ import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 import it.unifi.oris.sirio.petrinet.Marking;
 
 
-public class AbsorbingMarkingJob extends Job{
+public class JobAbsorbingMarking extends Job{
 
 	private Set<Marking> absorbingMarking;
 	private Marking m;
 	
-	protected AbsorbingMarkingJob(Set<Marking> set, Marking m){
+	protected JobAbsorbingMarking(Set<Marking> set, Marking m){
 		this.type = 1; // Job di tipo 1
 		
 		this.absorbingMarking = set;

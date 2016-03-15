@@ -13,7 +13,7 @@ import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 import it.unifi.oris.sirio.models.stpn.StochasticStateFeature;
 import it.unifi.oris.sirio.petrinet.Marking;
 
-public class LocalClassesAndSojourMapJob extends Job{
+public class JobLocalClassesAndSojourMap extends Job{
 	
 	//variabili per il tipo 5 (per generare il Job 5)
 	private BigDecimal sojourTime;
@@ -23,7 +23,7 @@ public class LocalClassesAndSojourMapJob extends Job{
 	private DeterministicEnablingState current;
 	private Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses;
 	
-	protected LocalClassesAndSojourMapJob(
+	protected JobLocalClassesAndSojourMap(
 			Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses,
 			DeterministicEnablingState current,
 			Marking m,

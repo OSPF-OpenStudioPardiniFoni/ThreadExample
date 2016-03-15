@@ -8,14 +8,14 @@ import java.util.Set;
 import it.unifi.oris.sirio.analyzer.state.State;
 import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 
-public class RegenerationClassesJob extends Job{
+public class JobRegenerationClasses extends Job{
 	
 	private Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses;
 	private DeterministicEnablingState current;
 	private DeterministicEnablingState regenerationStar;
 	private State s;
 	
-	protected RegenerationClassesJob(
+	protected JobRegenerationClasses(
 			Map<DeterministicEnablingState, Map<DeterministicEnablingState, Set<State>>> regenerationClasses,
 			DeterministicEnablingState current,
 			DeterministicEnablingState regenerationStar,

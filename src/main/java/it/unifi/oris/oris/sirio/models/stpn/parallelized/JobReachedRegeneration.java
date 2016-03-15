@@ -10,7 +10,7 @@ import it.unifi.oris.sirio.petrinet.Marking;
 import it.unifi.oris.sirio.petrinet.PetriNet;
 
 
-public class ReachedRegenerationJob extends Job{
+public class JobReachedRegeneration extends Job{
 	
 	private Set<DeterministicEnablingState> reachedRegenerations;
 	private	DeterministicEnablingState regeneration; 
@@ -26,7 +26,7 @@ public class ReachedRegenerationJob extends Job{
 	private Set<Marking> sometimesNotRegenerativeMarkings;
 	private Set<Marking> sometimesRegenerativeMarkings;
 	
-	protected ReachedRegenerationJob(
+	protected JobReachedRegeneration(
 			Set<DeterministicEnablingState> reachedRegenerations, 
 			DeterministicEnablingState regeneration,
 			/* variabili per il tipo 0, devono essere copie!*/

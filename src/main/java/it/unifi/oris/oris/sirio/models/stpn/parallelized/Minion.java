@@ -136,7 +136,7 @@ public class Minion extends Thread {
 			}
 			
 			currentJobType=job.getType();
-			////System.out.println("\t Minion "+id+" consuma tipo "+currentJobType+" Job "+job.toString());
+			//System.out.println("\t Minion "+id+" consuma tipo "+currentJobType+" Job "+job.toString());
 			
 			//fase 1 individuare il tipo di Job
 			switch(currentJobType){
@@ -241,7 +241,7 @@ public class Minion extends Thread {
 				if(absorbingCondition.evaluate(petriFeature.getMarking())){
 					
 					// GENERARE NUOVO LAVORO DI TIPO 1
-					Job type1Job = new AbsorbingMarkingJob(myJob.getAbsorbingMarkings(), petriFeature.getMarking());
+					Job type1Job = new JobAbsorbingMarking(myJob.getAbsorbingMarkings(), petriFeature.getMarking());
 					// AGGIUNGERE TYPE1JOB ALLA CODA DI UPLOAD DI TIPO 1
 					this.type1UploadWorkQueue.push(type1Job);
 				
@@ -254,7 +254,7 @@ public class Minion extends Thread {
 								s.getFeature(Regeneration.class).getValue();
 						
 						//CREO LAVORO DI TIPO 2
-						Job type2Job = new ReachedRegenerationJob(
+						Job type2Job = new JobReachedRegeneration(
 								myJob.getReachedRegenerations(), 
 								regeneration,
 								/* variabili per il tipo 0, devono essere copie!*/
@@ -277,7 +277,7 @@ public class Minion extends Thread {
 					//CREO LAVORO DI TIPO 6
 					InitialRegenerationJob jj = (InitialRegenerationJob) job;
 					
-					Job type6Job = new RegenerativeMarkingsJob(jj.getSometimesRegenerativeMarkings(),
+					Job type6Job = new JobRegenerativeMarkings(jj.getSometimesRegenerativeMarkings(),
 																jj.getSometimesNotRegenerativeMarkings(),
 																s.hasFeature(Regeneration.class),
 																petriFeature.getMarking());
@@ -295,7 +295,7 @@ public class Minion extends Thread {
 									s.getFeature(Regeneration.class).getValue();						
 							
 							//CREO UN LAVORO DI TIPO 3
-							Job type3Job = new RegenerationClassesJob(
+							Job type3Job = new JobRegenerationClasses(
 								myJob.getRegenerationClasses(),
 								current,
 								regenerationStar,
@@ -306,7 +306,7 @@ public class Minion extends Thread {
 					}else{
 						
 						//CREO UN LAVORO DI TIPO 4
-						Job type4Job = new SojourTimeJob(
+						Job type4Job = new JobSojourTime(
 								graph,
 								n,
 								stochasticFeature,

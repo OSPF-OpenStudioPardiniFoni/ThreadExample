@@ -10,6 +10,7 @@ import it.unifi.oris.oris.sirio.tests.TestCase;
 import it.unifi.oris.oris.sirio.tests.TestCase2ParallelTasks;
 import it.unifi.oris.oris.sirio.tests.TestCaseRejuvenation;
 import it.unifi.oris.oris.sirio.tests.TestCaseSMP;
+import it.unifi.oris.oris.sirio.tests.TestFischer;
 import it.unifi.oris.oris.sirio.tests.TestFoniPardini;
 import it.unifi.oris.oris.sirio.tests.TestPaolieri;
 import it.unifi.oris.sirio.analyzer.policy.FIFOPolicy;
@@ -24,10 +25,11 @@ public class MainClass {
 		System.out.println("----------Inizio Test----------");
 		
 		//SELEZIONE DEL TEST
-		TestCase test = new TestFoniPardini();
-		//TestCase test = new TestCase2ParallelTasks();
+		//TestCase test = new TestFoniPardini();
+		TestCase test = new TestCase2ParallelTasks();
 		//TestCase test = new TestCaseRejuvenation();
 		//TestCase test = new TestPaolieri();
+		//TestCase test = new TestFischer();
         
 		SteadyStateInitialStateBuilder sb = new SteadyStateInitialStateBuilder(test.getPN());
        

@@ -14,7 +14,7 @@ import it.unifi.oris.sirio.models.stpn.DeterministicEnablingState;
 import it.unifi.oris.sirio.models.stpn.StochasticStateFeature;
 import it.unifi.oris.sirio.petrinet.Marking;
 
-public class SojourTimeJob extends Job{
+public class JobSojourTime extends Job{
 	
 	// variabili per il tipo 4
 	private SuccessionGraph graph;
@@ -29,7 +29,7 @@ public class SojourTimeJob extends Job{
 	private DeterministicEnablingState current;
 	private Map<DeterministicEnablingState, Map<Marking,Set<State>>> localClasses;
 	
-	protected SojourTimeJob(
+	protected JobSojourTime(
 			SuccessionGraph graph,
 			Node n,
 			StochasticStateFeature stochasticFeature,
@@ -53,7 +53,7 @@ public class SojourTimeJob extends Job{
 		
 	}
 	
-	protected LocalClassesAndSojourMapJob executeJob(){
+	protected JobLocalClassesAndSojourMap executeJob(){
 		
 		Set<Succession> successions = graph.getOutgoingSuccessions(n);
 		
@@ -76,8 +76,8 @@ public class SojourTimeJob extends Job{
 		}
 		
 		// a questo punto creare un Job 5
-		LocalClassesAndSojourMapJob ret = 
-			new LocalClassesAndSojourMapJob(localClasses, current, m, s, sojourMap, sojourTime);
+		JobLocalClassesAndSojourMap ret = 
+			new JobLocalClassesAndSojourMap(localClasses, current, m, s, sojourMap, sojourTime);
 		
 		//System.out.println("Execute Tipo 4 genera sojourTime "+sojourTime.toString());
 		return ret;

@@ -5,14 +5,14 @@ import java.util.Set;
 import it.unifi.oris.sirio.models.stpn.Regeneration;
 import it.unifi.oris.sirio.petrinet.Marking;
 
-public class RegenerativeMarkingsJob extends Job{
+public class JobRegenerativeMarkings extends Job{
 
 	private Set<Marking> sometimesRegenerativeMarkings;
 	private Set<Marking> sometimesNotRegenerativeMarkings;
 	private boolean whichOne;
 	private Marking m;
 	
-	public RegenerativeMarkingsJob(Set<Marking> sometimesRegenerativeMarkings,
+	public JobRegenerativeMarkings(Set<Marking> sometimesRegenerativeMarkings,
 									Set<Marking> sometimesNotRegenerativeMarkings,
 									boolean whichOne,
 									Marking m){
