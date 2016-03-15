@@ -40,7 +40,7 @@ public class Minion extends Thread {
 	private WorkQueue type6UploadWorkQueue;
 	
 	//CODA DI CONSUMO (LAVORI CORRENTI, SINGOLI O A BLOCCHI)
-	private SynchedContainer myWork;
+	private SyncContainer myWork;
 	
 	
 	// Variabili Owner per le code a blocchi (con variabile condivisa)
@@ -59,7 +59,7 @@ public class Minion extends Thread {
 	public Minion(
 			int id,
 			SyncStatus status,
-			SynchedContainer work, 
+			SyncContainer work, 
 			WorkQueue t0, 
 			WorkQueue t1,
 			WorkQueue t2,

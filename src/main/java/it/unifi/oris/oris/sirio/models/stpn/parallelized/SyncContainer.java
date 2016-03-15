@@ -1,7 +1,7 @@
 package it.unifi.oris.oris.sirio.models.stpn.parallelized;
 
 
-public class SynchedContainer {
+public class SyncContainer {
 	private WorkQueue innerJobs=new WorkQueue();
 	
 	public synchronized Job extractWork() throws InterruptedException{

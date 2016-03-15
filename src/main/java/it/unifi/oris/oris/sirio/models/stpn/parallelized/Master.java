@@ -22,7 +22,7 @@ public class Master extends Thread {
 	private final int TYPE_6_THRESHOLD = 256;
 	
 	//Array  delle code di consumo di tutti i minion
-	private SynchedContainer[] currentWorks;
+	private SyncContainer[] currentWorks;
 	
 	//Array delle code di Upload di tutti i minion
 	private WorkQueue[] minionsType0UploadWorksQueues;
@@ -65,7 +65,7 @@ public class Master extends Thread {
 		minionsStatus=new SyncStatus(proc);
 		
 		//Inizializzo il vettore delle code di consumo
-		currentWorks=new SynchedContainer[proc];
+		currentWorks=new SyncContainer[proc];
 		
 		//Inizializzazione delle code di Upload per i minion
 		minionsType0UploadWorksQueues=new WorkQueue[proc];
@@ -96,7 +96,7 @@ public class Master extends Thread {
 	//	sharedVariable = new LinkedList<Double>();
 		
 		for(int i=0;i<proc;i++){
-			currentWorks[i]=new SynchedContainer();
+			currentWorks[i]=new SyncContainer();
 			
 			minionsType0UploadWorksQueues[i]= new WorkQueue();
 			minionsType1UploadWorksQueues[i]= new WorkQueue();
