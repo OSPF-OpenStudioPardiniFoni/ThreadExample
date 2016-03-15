@@ -196,7 +196,7 @@ public class Minion extends Thread {
 		//estraggo la rigenerazione corrente
 		DeterministicEnablingState current = job.getRegeneration();
 		//faccio un cast al Job per avere la visibilita' di alcuni metodi
-		InitialRegenerationJob myJob = (InitialRegenerationJob)job;
+		JobInitialRegeneration myJob = (JobInitialRegeneration)job;
 		
 		//ottengo le copie del RegenerativeComponentsFactory e della PN
 		RegenerativeComponentsFactory f = myJob.getRegenerativeComponentsFactory();
@@ -275,7 +275,7 @@ public class Minion extends Thread {
 					}
 					
 					//CREO LAVORO DI TIPO 6
-					InitialRegenerationJob jj = (InitialRegenerationJob) job;
+					JobInitialRegeneration jj = (JobInitialRegeneration) job;
 					
 					Job type6Job = new JobRegenerativeMarkings(jj.getSometimesRegenerativeMarkings(),
 																jj.getSometimesNotRegenerativeMarkings(),

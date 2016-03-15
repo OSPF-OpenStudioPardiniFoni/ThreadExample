@@ -61,12 +61,12 @@ public class JobReachedRegeneration extends Job{
 
 	// il Thread esegue questo metodo, se ritorna null non fare niente
 	// altrimenti aggiunge il ritorno alla coda di upload di tipo 0
-	protected InitialRegenerationJob executeJob(){
+	protected JobInitialRegeneration executeJob(){
 		if(!reachedRegenerations.contains(regeneration)){
 			
 			reachedRegenerations.add(regeneration);
 			// genera un nuovo lavoro di tipo 0
-			return new InitialRegenerationJob(
+			return new JobInitialRegeneration(
 					regeneration,
 					fMaker, 
 					absorbingMarkings, 

@@ -99,7 +99,7 @@ public class ParallelizedCompute {
         //(CONTIENE I RIFERIMENTI A TUTTE LE VARIABILI GLOBALI DA POPOLARE)
         //System.out.println("Initial Regeneration "+initialRegeneration.toString());
         
-        Job first = new InitialRegenerationJob(
+        Job first = new JobInitialRegeneration(
     			initialRegeneration,
     			fMaker,
     			a.getAbsorbingMarkings(),

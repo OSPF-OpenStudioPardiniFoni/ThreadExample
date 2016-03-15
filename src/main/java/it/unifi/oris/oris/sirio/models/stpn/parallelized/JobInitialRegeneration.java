@@ -13,7 +13,7 @@ import it.unifi.oris.sirio.petrinet.Marking;
 import it.unifi.oris.sirio.petrinet.MarkingCondition;
 import it.unifi.oris.sirio.petrinet.PetriNet;
 
-public class InitialRegenerationJob extends Job{
+public class JobInitialRegeneration extends Job{
 
 	//private DeterministicEnablingState current; 
 	
@@ -31,7 +31,7 @@ public class InitialRegenerationJob extends Job{
 	private Set<Marking> sometimesNotRegenerativeMarkings;
 	
 	
-	protected InitialRegenerationJob(
+	protected JobInitialRegeneration(
 			DeterministicEnablingState current,
 			RegenerativeComponentsFactoryAndPetriNetMaker fMaker,
 			Set<Marking> absorbingMarkings,
