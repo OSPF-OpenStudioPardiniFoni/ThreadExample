@@ -25,9 +25,9 @@ public class MainClass {
 		System.out.println("----------Inizio Test----------");
 		
 		//SELEZIONE DEL TEST
-		TestCase test = new TestFoniPardini();
+		//TestCase test = new TestFoniPardini();
 		//TestCase test = new TestCase2ParallelTasks();
-		//TestCase test = new TestCaseRejuvenation();
+		TestCase test = new TestCaseRejuvenation();
 		//TestCase test = new TestPaolieri();
 		//TestCase test = new TestFischer();
         
